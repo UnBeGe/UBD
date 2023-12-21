@@ -4,7 +4,16 @@
 #include "CustomMovementComponent.h"
 #include "CustomMovementCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "GameFramework/Character.h"
+
+void UCustomMovementComponent::OnRep_DashStart()
+{
+	if (Proxy_bDashStart)
+	{
+		DashStartDelegate.Broadcast();
+	}
+}
 
 void UCustomMovementComponent::EnterSlide()
 {
@@ -102,6 +111,32 @@ bool UCustomMovementComponent::GetSlideSurface(FHitResult& Hit) const
 	return GetWorld()->LineTraceSingleByProfile(Hit, Start, End, ProfileName, CustomMovementCharacterOwner->GetIgnoredCharacterParams());
 }
 
+bool UCustomMovementComponent::CanDash() const
+{
+	return IsWalking() && !IsCrouching();
+}
+
+void UCustomMovementComponent::PerformDash()
+{
+	DashStartTime = GetWorld()->GetTimeSeconds();
+
+	FVector DashDirection = (Acceleration.IsNearlyZero() ? UpdatedComponent->GetForwardVector() : Acceleration).GetSafeNormal2D();
+	Velocity = DashImpulse * (DashDirection + FVector::UpVector * 0.1f);
+
+	FQuat NewRotation = FRotationMatrix::MakeFromXZ(DashDirection, FVector::UpVector).ToQuat();
+	FHitResult Hit;
+	SafeMoveUpdatedComponent(FVector::ZeroVector, NewRotation, false, Hit);
+
+	SetMovementMode(MOVE_Falling);
+
+	DashStartDelegate.Broadcast();
+}
+
+void UCustomMovementComponent::OnDashCoolDownFinished()
+{
+	Safe_bWantsToDash = true;
+}
+
 UCustomMovementComponent::UCustomMovementComponent()
 {
 }
@@ -149,6 +184,25 @@ void UCustomMovementComponent::CrouchReleased()
 	bWantsToCrouch = false;
 }
 
+void UCustomMovementComponent::DashPressed()
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (CurrentTime - DashStartTime >= DashCooldownDuration)
+	{
+		Safe_bWantsToDash = true;
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle_DashCooldown, this, &UCustomMovementComponent::OnDashCoolDownFinished, DashCooldownDuration - (CurrentTime - DashStartTime));
+	}
+}
+
+void UCustomMovementComponent::DashhReleased()
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle_DashCooldown);
+	Safe_bWantsToDash = false;
+}
+
 void UCustomMovementComponent::AddModificator(FString ModificatorName, float ModificatorValue)
 {
 	MovementModificators.Add(ModificatorName, ModificatorValue);
@@ -166,7 +220,8 @@ void UCustomMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 {
 	Super::UpdateFromCompressedFlags(Flags);
 
-	Safe_WantsToSprint = (Flags & FSavedMove_Character::FLAG_Custom_0) != 0;
+	Safe_WantsToSprint = (Flags & FSavedMove_Custom::FLAG_Sprint) != 0;
+	Safe_bWantsToDash = (Flags & FSavedMove_Custom::FLAG_Dash) != 0;
 }
 
 void UCustomMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity)
@@ -174,6 +229,13 @@ void UCustomMovementComponent::OnMovementUpdated(float DeltaSeconds, const FVect
 	Super::OnMovementUpdated(DeltaSeconds, OldLocation, OldVelocity);
 
 	Safe_bPrevWantsToCrouch = bWantsToCrouch;
+}
+
+void UCustomMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(UCustomMovementComponent, Proxy_bDashStart, COND_SkipOwner);
 }
 
 bool UCustomMovementComponent::IsMovingOnGround() const
@@ -188,6 +250,7 @@ bool UCustomMovementComponent::CanCrouchInCurrentState() const
 
 void UCustomMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSeconds)
 {
+	//slide
 	if (MovementMode == MOVE_Walking && bWantsToCrouch && Safe_bPrevWantsToCrouch)
 	{
 		FHitResult PotentialSlideSurface;
@@ -202,6 +265,25 @@ void UCustomMovementComponent::UpdateCharacterStateBeforeMovement(float DeltaSec
 		ExitSlide();
 	}
 
+	//dash
+	bool bAuthProxy = CharacterOwner->HasAuthority() && !CharacterOwner->IsLocallyControlled();
+	if (Safe_bWantsToDash && CanDash())
+	{
+		if (!bAuthProxy || GetWorld()->GetTimeSeconds() - DashStartTime > AuthDashCooldownDuration)
+		{
+			PerformDash();
+			Safe_bWantsToDash = false;
+			Proxy_bDashStart = true;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Client tried to cheat"));
+		}
+	}
+	else
+	{
+		Proxy_bDashStart = false;
+	}
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
 }
 
@@ -266,6 +348,10 @@ bool UCustomMovementComponent::FSavedMove_Custom::CanCombineWith(const FSavedMov
 	{
 		return false;
 	}
+	if (Saved_bWantsToDash != NewCustomMove->Saved_bWantsToDash)
+	{
+		return false;
+	}
 
 	return FSavedMove_Character::CanCombineWith(NewMove, InCharacter, MaxDelta);
 }
@@ -275,6 +361,9 @@ void UCustomMovementComponent::FSavedMove_Custom::Clear()
 	FSavedMove_Character::Clear();
 
 	Saved_WantsToSprint = 0;
+	Saved_bPrevWantsToCrouch = 0;
+	Saved_bWantsToDash = 0;
+	Saved_bWantsToProne = 0;
 }
 
 uint8 UCustomMovementComponent::FSavedMove_Custom::GetCompressedFlags() const
@@ -284,6 +373,10 @@ uint8 UCustomMovementComponent::FSavedMove_Custom::GetCompressedFlags() const
 	if (Saved_WantsToSprint)
 	{
 		Result |= FLAG_Custom_0;
+	}
+	if (Saved_bWantsToDash )
+	{
+		Result |= FLAG_Dash;
 	}
 
 	return Result;
@@ -298,6 +391,8 @@ void UCustomMovementComponent::FSavedMove_Custom::SetMoveFor(ACharacter* C, floa
 	Saved_WantsToSprint = CharacterMovement->Safe_WantsToSprint;
 
 	Saved_bPrevWantsToCrouch = CharacterMovement->Safe_bPrevWantsToCrouch;
+
+	Saved_bWantsToDash = CharacterMovement->Safe_bWantsToDash;
 }
 //server
 void UCustomMovementComponent::FSavedMove_Custom::PrepMoveFor(ACharacter* C)
@@ -309,6 +404,8 @@ void UCustomMovementComponent::FSavedMove_Custom::PrepMoveFor(ACharacter* C)
 	CharacterMovement->Safe_WantsToSprint = Saved_WantsToSprint;
 
 	CharacterMovement->Safe_bPrevWantsToCrouch = Saved_bPrevWantsToCrouch;
+
+	CharacterMovement->Safe_bWantsToDash = Saved_bWantsToDash;
 }
 
 UCustomMovementComponent::FNetworkPredictionData_Client_Custom::FNetworkPredictionData_Client_Custom(const UCharacterMovementComponent& ClientMovement)

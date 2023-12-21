@@ -18,6 +18,7 @@ ACustomMovementCharacter::ACustomMovementCharacter(const FObjectInitializer& Obj
 :Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
 {
 	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
+	CustomMovementComponent->SetIsReplicated(true);
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 		
