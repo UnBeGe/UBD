@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConnectionSuccess);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResponseReceived, bool, Success, FString, Details);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CUSTOMMOVEMENT_API UBaseHttpRequestComponent : public UActorComponent
+class  UBaseHttpRequestComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

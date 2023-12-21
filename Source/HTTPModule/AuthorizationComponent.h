@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEmailConfirmed);
  * 
  */
 UCLASS()
-class CUSTOMMOVEMENT_API UAuthorizationComponent : public UBaseHttpRequestComponent
+class  UAuthorizationComponent : public UBaseHttpRequestComponent
 {
 	GENERATED_BODY()
 
