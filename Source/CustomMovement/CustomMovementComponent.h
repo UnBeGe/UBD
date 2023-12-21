@@ -1,0 +1,119 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "CustomMovementComponent.generated.h"
+
+
+UENUM(BlueprintType)
+enum ECustomMovementMode
+{
+	CMOVE_None UMETA(Hidden),
+	CMOVE_Slide UMETA(DisplayName = "Slide"),
+	CMOVE_MAX UMETA(Hidden),
+};
+
+/**
+ * 
+ */
+UCLASS()
+class CUSTOMMOVEMENT_API UCustomMovementComponent : public UCharacterMovementComponent
+{
+	GENERATED_BODY()
+
+	class FSavedMove_Custom : public FSavedMove_Character
+	{
+		typedef FSavedMove_Character Super;
+
+		uint8 Saved_WantsToSprint : 1;
+
+		uint8 Saved_bPrevWantsToCrouch : 1;
+	public:
+		virtual bool CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* InCharacter, float MaxDelta) const override;
+		virtual void Clear() override;
+		virtual uint8 GetCompressedFlags() const override;
+		virtual void SetMoveFor(ACharacter* C, float InDeltaTime, FVector const& NewAccel, FNetworkPredictionData_Client_Character& ClientData) override;
+		virtual void PrepMoveFor(ACharacter* C) override;
+	};
+
+	class FNetworkPredictionData_Client_Custom : public FNetworkPredictionData_Client_Character
+	{
+	public:
+		FNetworkPredictionData_Client_Custom(const UCharacterMovementComponent& ClientMovement);
+
+		typedef FNetworkPredictionData_Client_Character Super;
+
+		virtual FSavedMovePtr AllocateNewMove() override;
+	};
+protected:
+	virtual void InitializeComponent() override;
+
+	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+
+	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
+
+
+
+	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
+	virtual void UpdateCharacterStateAfterMovement(float DeltaSeconds) override;
+
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+
+	virtual float GetMaxSpeed() const;
+
+	bool IsMovementMode(EMovementMode InMovementMode) const;
+
+	TMap<FString, float> MovementModificators;
+
+public:
+	virtual bool IsMovingOnGround() const override;
+	virtual bool CanCrouchInCurrentState() const override;
+
+	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const override;
+
+	UPROPERTY(EditDefaultsOnly)
+		float Sprint_MaxWalkSpeed;
+	UPROPERTY(EditDefaultsOnly)
+		float Walk_MaxWalkSpeed;
+
+	UPROPERTY(EditDefaultsOnly) float SlideMinSpeed = 350.f;
+	UPROPERTY(EditDefaultsOnly) float SlideEnterImpulse = 500.f;
+	UPROPERTY(EditDefaultsOnly) float SlideGravityForce = 5000.f;
+	UPROPERTY(EditDefaultsOnly) float SlideFriction = 1.3f;
+
+	UPROPERTY(Transient)
+		class ACustomMovementCharacter* CustomMovementCharacterOwner;
+
+	float TotalModificator = 1;
+
+	bool Safe_WantsToSprint;
+
+	bool Safe_bPrevWantsToCrouch;
+
+private:
+	void EnterSlide();
+	void ExitSlide();
+	void PhysSlide(float deltaTime, int32 Iterations);
+	bool GetSlideSurface(FHitResult& Hit) const;
+public:
+	UCustomMovementComponent();
+
+	UFUNCTION(BlueprintCallable)
+		void SprintPressed();
+	UFUNCTION(BlueprintCallable)
+		void SprintReleased();
+	UFUNCTION(BlueprintCallable)
+		float GetTotalSpeedModificator();
+	UFUNCTION(BlueprintCallable)
+		void AddModificator(FString ModificatorName,float ModificatorValue);
+	UFUNCTION(BlueprintCallable)
+		void RemoveModificator(FString ModificatorName);
+	UFUNCTION(BlueprintCallable)
+		bool IsCustomMovementMode(ECustomMovementMode InCustomMovementMode) const;
+	UFUNCTION(BlueprintCallable) void CrouchPressed();
+	UFUNCTION(BlueprintCallable) void CrouchReleased();
+
+	
+};

@@ -10,6 +10,6 @@ public class UBDEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
-		ExtraModuleNames.Add("UBD");
-	}
+        ExtraModuleNames.AddRange(new string[] { "UBD", "CustomMovement" });
+    }
 }
