@@ -174,7 +174,7 @@ void AUBDCharacter::OnRep_PlayerState()
 	{
 		InitializeStartingValues(PS);
 		BindASCInput();
-		InitializeAttributes();
+		//InitializeAttributes();
 	}
 }
 
@@ -217,7 +217,7 @@ void AUBDCharacter::InitializeAttributes()
 
 void AUBDCharacter::AddStartupEffects()
 {
-	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || !AbilitySystemComponent->CharacterAbilityesGiven)
+	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->StartupEffectsApplied)
 	{
 		return;
 	}
@@ -248,6 +248,8 @@ void AUBDCharacter::InitializeStartingValues(AUBDPlayerState* PS)
 	AttributeSet = PS->GetAttributeSetBase();
 
 	AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+
+	InitializeAttributes();
 
 	SetHealth(GetMaxHealth());
 
