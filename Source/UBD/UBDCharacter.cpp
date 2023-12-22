@@ -10,11 +10,13 @@
 #include "CustomMovement/CustomMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Public/UBDPlayerState.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 
 #include "Materials/Material.h"
 #include "Engine/World.h"
+
 
 AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
 {
@@ -163,6 +165,19 @@ UAbilitySystemComponent* AUBDCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent.Get();
 }
 
+void AUBDCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	AUBDPlayerState* PS = GetPlayerState<AUBDPlayerState>();
+	if (PS)
+	{
+		InitializeStartingValues(PS);
+		BindASCInput();
+		InitializeAttributes();
+	}
+}
+
 void AUBDCharacter::AddCharacerAbilities()
 {
 	if (GetLocalRole() != ROLE_Authority || !AbilitySystemComponent.IsValid() || AbilitySystemComponent->CharacterAbilityesGiven)
@@ -223,10 +238,58 @@ void AUBDCharacter::AddStartupEffects()
 	AbilitySystemComponent->StartupEffectsApplied = true;
 }
 
+void AUBDCharacter::InitializeStartingValues(AUBDPlayerState* PS)
+{
+
+	AbilitySystemComponent = Cast<UUBDAbilitySystemComponent>(PS->GetAbilitySystemComponent());
+
+	PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+	AttributeSet = PS->GetAttributeSetBase();
+
+	AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+
+	SetHealth(GetMaxHealth());
+
+}
+
+void AUBDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	BindASCInput();
+}
+
+void AUBDCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AUBDPlayerState* PS = GetPlayerState<AUBDPlayerState>();
+	if (PS)
+	{
+		InitializeStartingValues(PS);
+
+		AddStartupEffects();
+		AddCharacerAbilities();
+	}
+}
+
 void AUBDCharacter::SetHealth(float Health)
 {
 	if (AttributeSet.IsValid())
 	{
 		AttributeSet->SetHealth(Health);
+	}
+}
+
+void AUBDCharacter::BindASCInput()
+{
+	if (!ASCInputBound && AbilitySystemComponent.IsValid() && IsValid(InputComponent))
+	{
+		FTopLevelAssetPath AbilityEnumAssetPath = FTopLevelAssetPath(FName("/Script/UBD"), FName("UBDAbilityID"));
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+			FString("CancelTarget"), AbilityEnumAssetPath, static_cast<int32>(UBDAbilityID::Confirm), static_cast<int32>(UBDAbilityID::Cancel)));
+
+		ASCInputBound = true;
 	}
 }

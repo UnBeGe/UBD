@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "UBD.h"
 #include "AbilitySystemInterface.h"
+#include "Public/UBDPlayerState.h"
 #include "GameplayTagContainer.h"
 #include "GAS/Character/UCharacterGameplayAbility.h"
 #include "UBDCharacter.generated.h"
@@ -20,6 +21,10 @@ class AUBDCharacter : public ACharacter, public IAbilitySystemInterface
 public:
 	AUBDCharacter(const FObjectInitializer& ObjectInitializer);
 
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	virtual void PossessedBy(AController* NewController) override;
+
 	UPROPERTY(BlueprintAssignable)
 	FCharacterDiedDelegate OnCharacterDied;
 
@@ -32,6 +37,8 @@ public:
 	virtual void RemoveCharacterAbilities();
 
 	virtual void Die();
+
+
 
 	UFUNCTION(BlueprintCallable)
 	virtual void FinishDying();
@@ -55,12 +62,16 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 protected:
+	bool ASCInputBound = false;
+
 	TWeakObjectPtr<class UUBDAbilitySystemComponent> AbilitySystemComponent;
 
 	TWeakObjectPtr<class UAdventureAttributeSet> AttributeSet;
 
 	FGameplayTag DeadTag;
 	FGameplayTag EffectsRemoveOnDeathTag;
+
+	virtual void OnRep_PlayerState() override;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FText CharatcerName;
@@ -83,7 +94,13 @@ protected:
 
 	virtual void AddStartupEffects();
 
+	void InitializeStartingValues(AUBDPlayerState* PS);
+
+
+
 	virtual void SetHealth(float Health);
+
+	void BindASCInput();
 
 private:
 	/** Top down camera */

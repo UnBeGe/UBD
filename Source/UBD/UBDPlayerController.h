@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Templates/SubclassOf.h"
+#include "Public/UBDPlayerState.h"
 #include "GameFramework/PlayerController.h"
 #include "UBDPlayerController.generated.h"
 
@@ -26,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
 
+	UPROPERTY()
+	AUBDPlayerState* UBDPlayerState;
+
 	/** FX Class that we will spawn when clicking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UNiagaraSystem* FXCursor;
@@ -47,6 +51,10 @@ protected:
 	uint32 bMoveToMouseCursor : 1;
 
 	virtual void SetupInputComponent() override;
+
+
+
+	virtual void OnPossess(APawn* InPawn) override;
 	
 	// To add mapping context
 	virtual void BeginPlay();
@@ -59,6 +67,7 @@ protected:
 	void OnTouchReleased();
 
 private:
+
 	FVector CachedDestination;
 
 	bool bIsTouch; // Is it a touch device
