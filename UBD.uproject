@@ -1,13 +1,17 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.3",
+	"EngineAssociation": "{A865B0FD-451B-05DB-57FA-46BABA9FE9D3}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "UBD",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"GameplayAbilities"
+			]
 		},
 		{
 			"Name": "CustomMovement",
@@ -27,6 +31,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "GameplayAbilities",
+			"Enabled": true
 		}
 	]
 }
