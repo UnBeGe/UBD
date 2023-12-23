@@ -160,6 +160,24 @@ float AUBDCharacter::GetMaxHealth() const
 	return 0.0f;
 }
 
+float AUBDCharacter::GetStamina() const
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetStamina();
+	}
+	return 0.0f;
+}
+
+float AUBDCharacter::GetMaxStamina() const
+{
+	if (AttributeSet.IsValid())
+	{
+		return AttributeSet->GetMaxStamina();
+	}
+	return 0.0f;
+}
+
 void AUBDCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
@@ -257,6 +275,8 @@ void AUBDCharacter::InitializeStartingValues(AUBDPlayerState* PS)
 	InitializeAttributes();
 
 	SetHealth(GetMaxHealth());
+
+	SetStamina(GetMaxStamina());
 
 }
 
@@ -388,6 +408,14 @@ void AUBDCharacter::SendAbilityLocalInput(const FInputActionValue& Value, int32 
 		AttributeSet->SetHealth(Health);
 	}
 }
+
+	void AUBDCharacter::SetStamina(float Stamina)
+	{
+		if (AttributeSet.IsValid())
+		{
+			AttributeSet->SetStamina(Stamina);
+		}
+	}
 
 void AUBDCharacter::BindASCInput()
 {

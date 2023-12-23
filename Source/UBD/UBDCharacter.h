@@ -56,6 +56,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetMaxHealth() const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetStamina() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxStamina() const;
+
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -115,6 +121,8 @@ protected:
 	virtual void SendAbilityLocalInput(const FInputActionValue& Value, int32 AbilityID);
 
 	virtual void SetHealth(float Health);
+
+	virtual void SetStamina(float Stamina);
 
 	void BindASCInput();
 
