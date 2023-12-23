@@ -12,4 +12,5 @@ enum class UBDAbilityID : uint8
 	None UMETA(DisplayName = "None"),
 	Confirm UMETA(DisplayName = "Confirm"),
 	Cancel UMETA(DisplayName = "Cancel"),
+	Sprint UMETA(DisplayName = "Sprint"),
 };

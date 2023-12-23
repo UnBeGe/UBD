@@ -12,14 +12,19 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/UBDPlayerState.h"
 #include "GameFramework/PlayerController.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "Kismet/KismetMathLibrary.h"
 #include "Materials/Material.h"
 #include "Engine/World.h"
 
 
 AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
 {
+	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
+	CustomMovementComponent->SetIsReplicated(true);
+
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -255,10 +260,64 @@ void AUBDCharacter::InitializeStartingValues(AUBDPlayerState* PS)
 
 }
 
+void AUBDCharacter::Move(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	if (UBDController == nullptr)
+	{
+		UBDController = Cast<AUBDPlayerController>(Controller);
+	}
+	if (UBDController != nullptr)
+	{
+		// find out which way is forward
+		const FRotator Rotation = CameraBoom->GetComponentRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+		
+		
+
+		//get forward vector
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		//get right vector 
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// add movement 
+		AddMovementInput(ForwardDirection, MovementVector.Y);
+		AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+
 void AUBDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	// Set up action bindings
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
 
+
+
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Sprint);
+
+
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+
+		//Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Move);
+
+		//Looking
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACustomMovementCharacter::Look);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
 	BindASCInput();
 }
 
@@ -271,12 +330,58 @@ void AUBDCharacter::PossessedBy(AController* NewController)
 	{
 		InitializeStartingValues(PS);
 
+		
 		AddStartupEffects();
 		AddCharacerAbilities();
 	}
 }
 
-void AUBDCharacter::SetHealth(float Health)
+void AUBDCharacter::Look(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+	// input is a Vector2D
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		// add yaw and pitch input to controller
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
+}
+
+
+void AUBDCharacter::Sprint(const FInputActionValue & Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Sprint));
+}
+
+void AUBDCharacter::SendAbilityLocalInput(const FInputActionValue& Value, int32 AbilityID)
+{
+	if (!AbilitySystemComponent.IsValid())
+	{
+		return;
+	}
+	bool Pressed = Value.Get<bool>();
+	if (Pressed)
+	{
+		AbilitySystemComponent->AbilityLocalInputPressed(AbilityID);
+	}
+	else
+	{
+		AbilitySystemComponent->AbilityLocalInputReleased(AbilityID);
+	}
+}
+
+	void AUBDCharacter::SetHealth(float Health)
 {
 	if (AttributeSet.IsValid())
 	{

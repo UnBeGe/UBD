@@ -7,8 +7,11 @@
 #include "UBD.h"
 #include "AbilitySystemInterface.h"
 #include "Public/UBDPlayerState.h"
+#include "InputActionValue.h"
 #include "GameplayTagContainer.h"
 #include "GAS/Character/UCharacterGameplayAbility.h"
+#include "CustomMovement/CustomMovementComponent.h"
+#include "UBDPlayerController.h"
 #include "UBDCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AUBDCharacter*, Character);
@@ -28,6 +31,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FCharacterDiedDelegate OnCharacterDied;
 
+	UPROPERTY()
+	AUBDPlayerController* UBDController;
+
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsAlive() const;
 
@@ -37,9 +43,7 @@ public:
 	virtual void RemoveCharacterAbilities();
 
 	virtual void Die();
-
-
-
+	
 	UFUNCTION(BlueprintCallable)
 	virtual void FinishDying();
 
@@ -62,6 +66,9 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement)
+	UCustomMovementComponent* CustomMovementComponent;
+
 	bool ASCInputBound = false;
 
 	TWeakObjectPtr<class UUBDAbilitySystemComponent> AbilitySystemComponent;
@@ -96,13 +103,24 @@ protected:
 
 	void InitializeStartingValues(AUBDPlayerState* PS);
 
+	/** Called for movement input */
+	void Move(const FInputActionValue& Value);
 
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Sprint(const FInputActionValue& Value);
+
+	virtual void SendAbilityLocalInput(const FInputActionValue& Value, int32 AbilityID);
 
 	virtual void SetHealth(float Health);
 
 	void BindASCInput();
 
 private:
+	FVector CachedDestination;
+
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
@@ -110,5 +128,22 @@ private:
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	/** Sprint Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
+
+	/** Jump Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* JumpAction;
+
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LookAction;
+
 };
 

@@ -37,8 +37,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetCharacterLevel() const;
 protected:
-	UPROPERTY()
-	class UUBDAbilitySystemComponent* AbilitySystemComponent;
+
 	UPROPERTY()
 	class UAdventureAttributeSet* AttributeSet;
 
@@ -54,4 +53,8 @@ protected:
 	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
 	virtual void LevelChanged(const FOnAttributeChangeData& Data);
 	virtual void StanTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UUBDAbilitySystemComponent* AbilitySystemComponent;
 };

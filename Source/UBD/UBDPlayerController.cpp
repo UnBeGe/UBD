@@ -39,7 +39,7 @@ void AUBDPlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
-
+	/*
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
@@ -59,6 +59,7 @@ void AUBDPlayerController::SetupInputComponent()
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+	*/
 }
 
 void AUBDPlayerController::OnPossess(APawn* InPawn)
@@ -68,7 +69,7 @@ void AUBDPlayerController::OnPossess(APawn* InPawn)
 	AUBDPlayerState* PS = GetPlayerState<AUBDPlayerState>();
 	if (PS)
 	{
-		UBDPlayerState = PS;
+		
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, InPawn);
 
 	}
@@ -82,17 +83,10 @@ void AUBDPlayerController::OnInputStarted()
 // Triggered every frame when the input is held down
 void AUBDPlayerController::OnSetDestinationTriggered()
 {
-	if (!IsValid(UBDPlayerState))
-	{
-		return;
-	}
-	if (UBDPlayerState->IsAlive())
-	{
-
-	
 	// We flag that the input is being pressed
 	FollowTime += GetWorld()->GetDeltaSeconds();
 	
+
 	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
 	bool bHitSuccessful = false;
@@ -118,15 +112,12 @@ void AUBDPlayerController::OnSetDestinationTriggered()
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
 		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
 	}
-	}
+	
 }
 
 void AUBDPlayerController::OnSetDestinationReleased()
 {
-	if (!IsValid(UBDPlayerState))
-	{
-		return;
-	}
+
 	if (UBDPlayerState->IsAlive())
 	{
 		// If it was a short press
