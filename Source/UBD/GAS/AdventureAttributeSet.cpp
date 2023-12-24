@@ -25,9 +25,15 @@ void UAdventureAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldStam
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAdventureAttributeSet, Stamina, OldStamina);
 }
 
+
 void UAdventureAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAdventureAttributeSet, MaxStamina, OldMaxStamina);
+}
+
+void UAdventureAttributeSet::OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAdventureAttributeSet, StaminaRegen, OldStaminaRegen);
 }
 
 void UAdventureAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor)
@@ -148,7 +154,7 @@ void UAdventureAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 			}
 
 			// Apply the health change and then clamp it
-			const float NewHealth = GetHealth() - LocalDamageDone;
+			const float NewHealth = GetHealth() - (LocalDamageDone * (1 - (GetArmor()/100)));
 			SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
 			//Code for reaction on damage
 			if (TargetCharacter && WasAlive)
@@ -233,6 +239,7 @@ void UAdventureAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
 		// Handle stamina changes.
+		//UE_LOG(LogTemp, Warning, TEXT("Clamped is %f"), (FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina())));
 		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 	}
 }
@@ -247,4 +254,5 @@ void UAdventureAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME_CONDITION_NOTIFY(UAdventureAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAdventureAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAdventureAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAdventureAttributeSet, StaminaRegen, COND_None, REPNOTIFY_Always);
 }
