@@ -40,6 +40,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float VisionLenght = 500.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector2D OffsetVector = FVector2D(900, 900);
+
 	ECollisionChannel CollisionToTrace = ECollisionChannel::ECC_Visibility;
-		
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UTextureRenderTarget2D* RenderTarget;
 };
