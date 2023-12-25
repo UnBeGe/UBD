@@ -1,0 +1,45 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "LOSComponent.generated.h"
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UBD_API ULOSComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	// Sets default values for this component's properties
+	ULOSComponent();
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FTimerHandle CheckTimerHandle;
+
+	void CheckLOS();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float CheckRate = 0.1f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float DegreesPerTrace = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int32 NumTraces = 32;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float VisionLenght = 500.0f;
+
+	ECollisionChannel CollisionToTrace = ECollisionChannel::ECC_Visibility;
+		
+};
