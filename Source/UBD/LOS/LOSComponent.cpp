@@ -2,6 +2,10 @@
 
 
 #include "LOSComponent.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Engine/Canvas.h"
+#include "GameFramework/Pawn.h"
+#include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values for this component's properties
 ULOSComponent::ULOSComponent()
@@ -18,7 +22,11 @@ ULOSComponent::ULOSComponent()
 void ULOSComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+	{
+		GetWorld()->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+	}
+	
 	// ...
 }
 
@@ -27,13 +35,13 @@ void ULOSComponent::BeginPlay()
 void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	// ...
 }
 
 void ULOSComponent::CheckLOS()
 {
-	FVector InitialRotation = FRotator(0,NumTraces*DegreesPerTrace/-2.f,0).RotateVector(GetOwner()->GetActorLocation());
+	FVector OwnerLocation = GetOwner()->GetActorLocation();
+	FVector InitialRotation = FRotator(0,NumTraces*DegreesPerTrace/-2.f,0).RotateVector(GetOwner()->GetActorForwardVector());
 	TArray<FVector> TraceResults;
 	for (int32 i = 0; i < NumTraces; i++)
 	{
@@ -41,18 +49,33 @@ void ULOSComponent::CheckLOS()
 		FHitResult Hit;
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(GetOwner());
-		if (GetWorld()->LineTraceSingleByChannel(Hit, GetOwner()->GetActorLocation(), RotatedVector * VisionLenght + GetOwner()->GetActorLocation(), CollisionToTrace, Params))
+		//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
+		if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, RotatedVector * VisionLenght * 2 + OwnerLocation + OffsetVectorStartTrace, CollisionToTrace, Params))
 		{
-			TraceResults.Add(Hit.Location + RotatedVector * 10);
+			TraceResults.Add(Hit.Location + RotatedVector * HitOffset);
 		}
 		else
 		{
-			TraceResults.Add(RotatedVector * VisionLenght + GetOwner()->GetActorLocation());
+			TraceResults.Add(RotatedVector * VisionLenght * 2 + OwnerLocation);
 		}
 	}
+	TArray<FCanvasUVTri> Triangles;
 	for (int32 i = 0; i < TraceResults.Num() - 2; i++)
 	{
-
+		FCanvasUVTri Tri;
+		Tri.V0_Color = FLinearColor(1, 1, 1, 0);
+		Tri.V1_Color = FLinearColor(1, 1, 1, 0);
+		Tri.V2_Color = FLinearColor(1, 1, 1, 0);
+		Tri.V0_Pos = OffsetVector;
+		Tri.V1_Pos = OffsetVector + FVector2D(TraceResults[i] - OwnerLocation);
+		Tri.V2_Pos = OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
+		Triangles.Add(Tri);
 	}
+	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
+	UCanvas* Canvas;
+	FVector2D Size;
+	FDrawToRenderTargetContext Context;
+	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
+	Canvas->K2_DrawTriangle(nullptr, Triangles);
 }
 
