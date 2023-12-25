@@ -35,6 +35,9 @@ public:
 	float DegreesPerTrace = 5.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HitOffset = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int32 NumTraces = 32;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -42,6 +45,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector2D OffsetVector = FVector2D(900, 900);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FVector OffsetVectorStartTrace = FVector(0,0, 80);
 
 	ECollisionChannel CollisionToTrace = ECollisionChannel::ECC_Visibility;
 

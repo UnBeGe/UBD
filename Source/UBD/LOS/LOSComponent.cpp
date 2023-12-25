@@ -4,6 +4,7 @@
 #include "LOSComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Engine/Canvas.h"
+#include "GameFramework/Pawn.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values for this component's properties
@@ -21,7 +22,11 @@ ULOSComponent::ULOSComponent()
 void ULOSComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+	{
+		GetWorld()->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+	}
+	
 	// ...
 }
 
@@ -30,7 +35,6 @@ void ULOSComponent::BeginPlay()
 void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	// ...
 }
 
@@ -46,13 +50,13 @@ void ULOSComponent::CheckLOS()
 		FCollisionQueryParams Params;
 		Params.AddIgnoredActor(GetOwner());
 		//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, CollisionToTrace, Params))
+		if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, RotatedVector * VisionLenght * 2 + OwnerLocation + OffsetVectorStartTrace, CollisionToTrace, Params))
 		{
-			TraceResults.Add(Hit.Location + RotatedVector * 10);
+			TraceResults.Add(Hit.Location + RotatedVector * HitOffset);
 		}
 		else
 		{
-			TraceResults.Add(RotatedVector * VisionLenght + OwnerLocation);
+			TraceResults.Add(RotatedVector * VisionLenght * 2 + OwnerLocation);
 		}
 	}
 	TArray<FCanvasUVTri> Triangles;
