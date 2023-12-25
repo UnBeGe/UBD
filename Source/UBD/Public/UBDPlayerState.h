@@ -38,7 +38,7 @@ public:
 	int32 GetCharacterLevel() const;
 protected:
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	class UAdventureAttributeSet* AttributeSet;
 
 	FGameplayTag DeadTag;

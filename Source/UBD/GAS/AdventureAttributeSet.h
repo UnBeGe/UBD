@@ -28,7 +28,7 @@ public:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const override;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Health", ReplicatedUsing = OnRep_Level)
+	UPROPERTY(BlueprintReadOnly, Category = "Level", ReplicatedUsing = OnRep_Level)
 	FGameplayAttributeData Level;
 	ATTRIBUTE_ACCESSORS(UAdventureAttributeSet, Level)
 
@@ -39,6 +39,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Stamina", ReplicatedUsing = OnRep_Stamina)
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS(UAdventureAttributeSet, Stamina)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Stamina", ReplicatedUsing = OnRep_StaminaRegen)
+	FGameplayAttributeData StaminaRegen;
+	ATTRIBUTE_ACCESSORS(UAdventureAttributeSet, StaminaRegen)
 
 	UPROPERTY(BlueprintReadOnly, Category = "MaxStamina", ReplicatedUsing = OnRep_MaxStamina)
 	FGameplayAttributeData MaxStamina;
@@ -65,8 +69,12 @@ protected:
 	UFUNCTION()
 	virtual void OnRep_Stamina(const FGameplayAttributeData& OldStamina);
 
+
 	UFUNCTION()
 	virtual void OnRep_MaxStamina(const FGameplayAttributeData& OldMaxStamina);
+
+	UFUNCTION()
+	virtual void OnRep_StaminaRegen(const FGameplayAttributeData& OldStaminaRegen);
 
 	UFUNCTION()
 	virtual void OnRep_Armor(const FGameplayAttributeData& OldArmor);
@@ -79,4 +87,6 @@ protected:
 
 	UFUNCTION()
 	virtual void OnRep_Level(const FGameplayAttributeData& OldLevel);
+
+	
 };
