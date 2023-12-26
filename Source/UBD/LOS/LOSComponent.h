@@ -7,6 +7,7 @@
 #include "LOSComponent.generated.h"
 
 
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UBD_API ULOSComponent : public UActorComponent
 {
@@ -20,11 +21,17 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void BeginDestroy() override;
+
 	FTimerHandle CheckTimerHandle;
+
+
+	TSharedPtr<class FLOSCheckRunnable> LOSViewChackRun;
 
 	void CheckLOS();
 
@@ -54,3 +61,4 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UTextureRenderTarget2D* RenderTarget;
 };
+
