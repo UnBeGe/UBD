@@ -7,6 +7,7 @@
 #include "Async/Async.h"
 #include "AsyncCheck/AsyncCheck.h"
 #include "GameFramework/Pawn.h"
+#include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values for this component's properties
@@ -34,7 +35,7 @@ void ULOSComponent::BeginPlay()
 		{
 			LOSViewChackRun = MakeShared<FLOSCheckRunnable>(this);
 		}
-		
+		Pawn = Cast<APawn>(GetOwner());
 
 		
 	}
@@ -56,6 +57,10 @@ void ULOSComponent::BeginDestroy()
 void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (Pawn)
+	{
+		UKismetMaterialLibrary::SetVectorParameterValue(this, Collection, ParameterName, FLinearColor(Pawn->GetActorLocation()));
+	}
 	// ...
 }
 
