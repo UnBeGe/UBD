@@ -36,6 +36,14 @@ public:
 	void CheckLOS();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName ParameterName;
+
+	APawn* Pawn;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UMaterialParameterCollection* Collection;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float CheckRate = 0.1f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

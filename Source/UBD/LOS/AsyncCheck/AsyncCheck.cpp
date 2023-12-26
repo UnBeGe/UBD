@@ -39,7 +39,7 @@ uint32 FLOSCheckRunnable::Run()
 				//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
 				if (LOS->GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + LOS->OffsetVectorStartTrace, RotatedVector * LOS->VisionLenght * 2 + OwnerLocation + LOS->OffsetVectorStartTrace, LOS->CollisionToTrace, Params))
 				{
-					TraceResults.Add(Hit.Location + RotatedVector * LOS->HitOffset);
+					TraceResults.Add(Hit.Location + -1 * Hit.Normal * LOS->HitOffset);
 				}
 				else
 				{
@@ -51,8 +51,8 @@ uint32 FLOSCheckRunnable::Run()
 			{
 				FCanvasUVTri Tri;
 				Tri.V0_Color = FLinearColor(1, 1, 1, 0);
-				Tri.V1_Color = FLinearColor(1, 1, 1, 0);
-				Tri.V2_Color = FLinearColor(1, 1, 1, 0);
+				Tri.V1_Color = FLinearColor(0, 0, 0, 0);
+				Tri.V2_Color = FLinearColor(0, 0, 0, 0);
 				Tri.V0_Pos = LOS->OffsetVector;
 				Tri.V1_Pos = LOS->OffsetVector + FVector2D(TraceResults[i] - OwnerLocation);
 				Tri.V2_Pos = LOS->OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
@@ -61,7 +61,7 @@ uint32 FLOSCheckRunnable::Run()
 			if (LOS)
 			{
 				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
-					if (IsValid(LOS) && Loop)
+					if (this && IsValid(LOS) && Loop)
 					{
 						UKismetRenderingLibrary::ClearRenderTarget2D(LOS, LOS->RenderTarget);
 						UCanvas* Canvas;
