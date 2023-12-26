@@ -57,6 +57,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float VisionLenght = 500.0f;
+	//Should be less then 50
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float BufferPercent = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector2D OffsetVector = FVector2D(900, 900);

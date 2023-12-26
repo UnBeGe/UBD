@@ -65,10 +65,10 @@ uint32 FLOSCheckRunnable::Run()
 					V0Color = (1.0f - ((i - EndBuffer) / Buffer));
 				}
 				FCanvasUVTri Tri;
-				float V1Color = 1 - ((TraceResults[i] - OwnerLocation).Length() / (LOS->VisionLenght * 2));
-				V1Color *= V0Color;
-				float V2Color = 1 - ((TraceResults[i + 1] - OwnerLocation).Length() / (LOS->VisionLenght * 2));
-				V2Color *= V0Color;
+				float V1Color = (V0Color *1) - ((TraceResults[i] - OwnerLocation).Length() / (LOS->VisionLenght * 2));
+				//V1Color *= V0Color;
+				float V2Color = (V0Color * 1) - ((TraceResults[i + 1] - OwnerLocation).Length() / (LOS->VisionLenght * 2));
+				//V2Color *= V0Color;
 				Tri.V0_Color = FLinearColor(V0Color, V0Color, V0Color, 0);
 				Tri.V1_Color = FLinearColor(V1Color, V1Color, V1Color, 0);
 				Tri.V2_Color = FLinearColor(V2Color, V2Color, V2Color, 0);
