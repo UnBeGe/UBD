@@ -4,6 +4,8 @@
 #include "LOSComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Engine/Canvas.h"
+#include "Async/Async.h"
+#include "AsyncCheck/AsyncCheck.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
@@ -24,10 +26,29 @@ void ULOSComponent::BeginPlay()
 	Super::BeginPlay();
 	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
 	{
-		GetWorld()->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+		UWorld* World = GetWorld();
+
+		//World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+		
+		if (FPlatformProcess::SupportsMultithreading())
+		{
+			LOSViewChackRun = MakeShared<FLOSCheckRunnable>(this);
+		}
+		
+
+		
 	}
 	
 	// ...
+}
+
+void ULOSComponent::BeginDestroy()
+{
+	if (LOSViewChackRun.IsValid())
+	{
+		LOSViewChackRun->Stop();
+	}
+	Super::BeginDestroy();
 }
 
 
@@ -40,42 +61,68 @@ void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void ULOSComponent::CheckLOS()
 {
-	FVector OwnerLocation = GetOwner()->GetActorLocation();
-	FVector InitialRotation = FRotator(0,NumTraces*DegreesPerTrace/-2.f,0).RotateVector(GetOwner()->GetActorForwardVector());
-	TArray<FVector> TraceResults;
-	for (int32 i = 0; i < NumTraces; i++)
-	{
-		FVector RotatedVector = FRotator(0, i*DegreesPerTrace, 0).RotateVector(InitialRotation);
-		FHitResult Hit;
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(GetOwner());
-		//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
-		if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, RotatedVector * VisionLenght * 2 + OwnerLocation + OffsetVectorStartTrace, CollisionToTrace, Params))
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this]() {
+		FVector OwnerLocation = GetOwner()->GetActorLocation();
+		FVector InitialRotation = FRotator(0, NumTraces * DegreesPerTrace / -2.f, 0).RotateVector(GetOwner()->GetActorForwardVector());
+		TArray<FVector> TraceResults;
+		for (int32 i = 0; i < NumTraces; i++)
 		{
-			TraceResults.Add(Hit.Location + RotatedVector * HitOffset);
+			FVector RotatedVector = FRotator(0, i * DegreesPerTrace, 0).RotateVector(InitialRotation);
+			FHitResult Hit;
+			FCollisionQueryParams Params;
+			Params.AddIgnoredActor(GetOwner());
+			//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
+			if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, RotatedVector * VisionLenght * 2 + OwnerLocation + OffsetVectorStartTrace, CollisionToTrace, Params))
+			{
+				TraceResults.Add(Hit.Location + RotatedVector * HitOffset);
+			}
+			else
+			{
+				TraceResults.Add(RotatedVector * VisionLenght * 2 + OwnerLocation);
+			}
 		}
-		else
+		TArray<FCanvasUVTri> Triangles;
+		for (int32 i = 0; i < TraceResults.Num() - 2; i++)
 		{
-			TraceResults.Add(RotatedVector * VisionLenght * 2 + OwnerLocation);
+			FCanvasUVTri Tri;
+			Tri.V0_Color = FLinearColor(1, 1, 1, 0);
+			Tri.V1_Color = FLinearColor(1, 1, 1, 0);
+			Tri.V2_Color = FLinearColor(1, 1, 1, 0);
+			Tri.V0_Pos = OffsetVector;
+			Tri.V1_Pos = OffsetVector + FVector2D(TraceResults[i] - OwnerLocation);
+			Tri.V2_Pos = OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
+			Triangles.Add(Tri);
 		}
-	}
-	TArray<FCanvasUVTri> Triangles;
-	for (int32 i = 0; i < TraceResults.Num() - 2; i++)
-	{
-		FCanvasUVTri Tri;
-		Tri.V0_Color = FLinearColor(1, 1, 1, 0);
-		Tri.V1_Color = FLinearColor(1, 1, 1, 0);
-		Tri.V2_Color = FLinearColor(1, 1, 1, 0);
-		Tri.V0_Pos = OffsetVector;
-		Tri.V1_Pos = OffsetVector + FVector2D(TraceResults[i] - OwnerLocation);
-		Tri.V2_Pos = OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
-		Triangles.Add(Tri);
-	}
-	UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
-	UCanvas* Canvas;
-	FVector2D Size;
-	FDrawToRenderTargetContext Context;
-	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
-	Canvas->K2_DrawTriangle(nullptr, Triangles);
+		if (this)
+		{
+			AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
+
+				UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
+				UCanvas* Canvas;
+				FVector2D Size;
+				FDrawToRenderTargetContext Context;
+				UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
+				if (Canvas && this)
+				{
+					Canvas->K2_DrawTriangle(nullptr, Triangles);
+				}
+				else
+				{
+					UWorld* World = GetWorld();
+					if (World)
+					{
+						World->GetTimerManager().ClearTimer(this->CheckTimerHandle);
+					}
+				}
+				UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, Context);
+				
+				
+				});
+		}
+		
+		});
+	
+	
+	
 }
 
