@@ -31,9 +31,9 @@ struct FBaseItem : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     TSoftObjectPtr<UTexture2D> Thumbnail;
 
-    FORCEINLINE bool operator==(const FBaseItem& MyDataReference)
+    FORCEINLINE bool operator==(const FBaseItem& MyDataReference) const
     {
-        return MyDataReference.Name == Name && MyDataReference.Count == Count && ActorReference == MyDataReference.ActorReference;
+        return MyDataReference.Name == Name && ActorReference == MyDataReference.ActorReference;
     }
 
     void Destroy();

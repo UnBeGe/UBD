@@ -18,6 +18,7 @@ FLOSCheckRunnable::~FLOSCheckRunnable()
 	{
 		Thread->Kill(true);
 		delete Thread;
+		Thread = NULL;
 	}
 }
 
@@ -77,10 +78,10 @@ uint32 FLOSCheckRunnable::Run()
 				Tri.V2_Pos = LOS->OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
 				Triangles.Add(Tri);
 			}
-			if (LOS)
+			if (LOS && Loop)
 			{
 				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
-					if (this && IsValid(LOS) && Loop)
+					if (Loop && this && LOS && IsValid(LOS) )
 					{
 						UWorld* BWorld = LOS->GetWorld();
 						if (!BWorld)
