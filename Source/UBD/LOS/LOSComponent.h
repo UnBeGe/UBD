@@ -67,7 +67,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector OffsetVectorStartTrace = FVector(0,0, 80);
 
-	ECollisionChannel CollisionToTrace = ECollisionChannel::ECC_Visibility;
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Default")
+	TEnumAsByte<ECollisionChannel> CollisionToTrace = ECollisionChannel::ECC_Visibility;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UTextureRenderTarget2D* RenderTarget;

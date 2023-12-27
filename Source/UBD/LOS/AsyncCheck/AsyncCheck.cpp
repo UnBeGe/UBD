@@ -9,7 +9,7 @@
 FLOSCheckRunnable::FLOSCheckRunnable(ULOSComponent* InLOS)
 {
 	LOS = InLOS;
-	Thread = FRunnableThread::Create(this, TEXT("LOSCheckthread"), 0U, EThreadPriority::TPri_Lowest);
+	Thread = FRunnableThread::Create(this, TEXT("LOSCheckthread"), 0U, EThreadPriority::TPri_AboveNormal);
 }
 
 FLOSCheckRunnable::~FLOSCheckRunnable()
@@ -37,7 +37,7 @@ uint32 FLOSCheckRunnable::Run()
 				FCollisionQueryParams Params;
 				Params.AddIgnoredActor(LOS->GetOwner());
 				//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
-				if (LOS->GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + LOS->OffsetVectorStartTrace, RotatedVector * LOS->VisionLenght * 2 + OwnerLocation + LOS->OffsetVectorStartTrace, LOS->CollisionToTrace, Params))
+				if (LOS->GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + LOS->OffsetVectorStartTrace, ((RotatedVector * LOS->VisionLenght * 2) + OwnerLocation), LOS->CollisionToTrace, Params))
 				{
 					TraceResults.Add(Hit.Location + -1 * Hit.Normal * LOS->HitOffset);
 				}
@@ -82,24 +82,33 @@ uint32 FLOSCheckRunnable::Run()
 				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
 					if (this && IsValid(LOS) && Loop)
 					{
-						UKismetRenderingLibrary::ClearRenderTarget2D(LOS, LOS->RenderTarget);
-						UCanvas* Canvas;
-						FVector2D Size;
-						FDrawToRenderTargetContext Context;
-						UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(LOS, LOS->RenderTarget, Canvas, Size, Context);
-						if (Canvas && this)
+						UWorld* BWorld = LOS->GetWorld();
+						if (!BWorld)
 						{
-							Canvas->K2_DrawTriangle(nullptr, Triangles);
+							Loop = false;
 						}
 						else
 						{
-							UWorld* World = LOS->GetWorld();
-							if (World)
+							UKismetRenderingLibrary::ClearRenderTarget2D(BWorld, LOS->RenderTarget);
+							UCanvas* Canvas;
+							FVector2D Size;
+							FDrawToRenderTargetContext Context;
+							UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(LOS, LOS->RenderTarget, Canvas, Size, Context);
+							if (Canvas && this)
 							{
-								World->GetTimerManager().ClearTimer(LOS->CheckTimerHandle);
+								Canvas->K2_DrawTriangle(nullptr, Triangles);
 							}
+							else
+							{
+								UWorld* World = LOS->GetWorld();
+								if (World)
+								{
+									World->GetTimerManager().ClearTimer(LOS->CheckTimerHandle);
+								}
+							}
+							UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(LOS, Context);
 						}
-						UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(LOS, Context);
+						
 					}
 					
 
@@ -111,6 +120,7 @@ uint32 FLOSCheckRunnable::Run()
 		else
 		{
 			Loop = false;
+			return 0;
 		}
 		
 	}

@@ -28,7 +28,7 @@ void ULOSComponent::BeginPlay()
 	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
 	{
 		UWorld* World = GetWorld();
-
+		//Debug line traces
 		//World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 		
 		if (FPlatformProcess::SupportsMultithreading())
@@ -66,8 +66,8 @@ void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void ULOSComponent::CheckLOS()
 {
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [this]() {
-		FVector OwnerLocation = GetOwner()->GetActorLocation();
+	AsyncTask(ENamedThreads::GameThread, [this]() {
+		FVector OwnerLocation = GetOwner()->GetActorLocation() - (GetOwner()->GetActorForwardVector() * 15);
 		FVector InitialRotation = FRotator(0, NumTraces * DegreesPerTrace / -2.f, 0).RotateVector(GetOwner()->GetActorForwardVector());
 		TArray<FVector> TraceResults;
 		for (int32 i = 0; i < NumTraces; i++)
@@ -76,30 +76,20 @@ void ULOSComponent::CheckLOS()
 			FHitResult Hit;
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(GetOwner());
-			//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
-			if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, RotatedVector * VisionLenght * 2 + OwnerLocation + OffsetVectorStartTrace, CollisionToTrace, Params))
+			
+			if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, ((RotatedVector * VisionLenght * 2) + OwnerLocation) , CollisionToTrace, Params))
 			{
-				TraceResults.Add(Hit.Location + RotatedVector * HitOffset);
+				DrawDebugLine(GetWorld(), OwnerLocation + OffsetVectorStartTrace, Hit.Location, FColor::Red, false, CheckRate);
 			}
 			else
 			{
-				TraceResults.Add(RotatedVector * VisionLenght * 2 + OwnerLocation);
+				DrawDebugLine(GetWorld(), OwnerLocation + OffsetVectorStartTrace, ((RotatedVector * VisionLenght * 2) + OwnerLocation) - OffsetVectorStartTrace, FColor::Red, false, CheckRate);
 			}
 		}
-		TArray<FCanvasUVTri> Triangles;
-		for (int32 i = 0; i < TraceResults.Num() - 2; i++)
-		{
-			FCanvasUVTri Tri;
-			Tri.V0_Color = FLinearColor(1, 1, 1, 0);
-			Tri.V1_Color = FLinearColor(1, 1, 1, 0);
-			Tri.V2_Color = FLinearColor(1, 1, 1, 0);
-			Tri.V0_Pos = OffsetVector;
-			Tri.V1_Pos = OffsetVector + FVector2D(TraceResults[i] - OwnerLocation);
-			Tri.V2_Pos = OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
-			Triangles.Add(Tri);
-		}
+		
 		if (this)
 		{
+			/*
 			AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
 
 				UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
@@ -123,6 +113,7 @@ void ULOSComponent::CheckLOS()
 				
 				
 				});
+				*/
 		}
 		
 		});
