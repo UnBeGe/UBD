@@ -26,7 +26,7 @@ struct FBaseItem : public FTableRowBase
 
     // This is the tooltip for our test variable.
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    TSoftObjectPtr<AActor> ActorReference;
+    TSoftClassPtr<AActor> ActorReference;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     TSoftObjectPtr<UTexture2D> Thumbnail;
