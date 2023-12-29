@@ -15,10 +15,14 @@
  */
 class FLOSCheckRunnable : public FRunnable
 {
+	mutable FCriticalSection DataGuard;
+
 public:
 	// Custom constructor for setting up our thread with its target
 	FLOSCheckRunnable(ULOSComponent* InLOS);
 	virtual ~FLOSCheckRunnable();
+
+	TArray<FCanvasUVTri> SafeTraceResults;
 
 	// FRunnable functions
 	virtual uint32 Run() override;

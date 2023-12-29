@@ -11,13 +11,15 @@
 #include "GameplayTagContainer.h"
 #include "GAS/Character/UCharacterGameplayAbility.h"
 #include "CustomMovement/CustomMovementComponent.h"
+#include "Inventory/InventoryComponent.h"
+#include "Interface/Interact_I.h"
 #include "UBDPlayerController.h"
 #include "UBDCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AUBDCharacter*, Character);
 
 UCLASS(Blueprintable)
-class AUBDCharacter : public ACharacter, public IAbilitySystemInterface
+class AUBDCharacter : public ACharacter, public IAbilitySystemInterface, public IInteract_I
 {
 	GENERATED_BODY()
 
@@ -132,6 +134,10 @@ private:
 	/** Top down camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* TopDownCameraComponent;
+
+	/** Inventory */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* Inventory;
 
 	/** Camera boom positioning the camera above the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
