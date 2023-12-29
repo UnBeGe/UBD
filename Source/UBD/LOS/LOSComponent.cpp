@@ -122,3 +122,37 @@ void ULOSComponent::CheckLOS()
 	
 }
 
+void ULOSComponent::UpdateRenderTarget(TArray<FCanvasUVTri> Triangles)
+{
+	if (this && !IsBeingDestroyed() && IsValid(this))
+	{
+		UWorld* BWorld = GetWorld();
+		if (!BWorld)
+		{
+			return;
+		}
+		else
+		{
+			UKismetRenderingLibrary::ClearRenderTarget2D(BWorld, RenderTarget);
+			UCanvas* Canvas;
+			FVector2D Size;
+			FDrawToRenderTargetContext Context;
+			UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
+			if (Canvas && this)
+			{
+				Canvas->K2_DrawTriangle(nullptr, Triangles);
+			}
+			else
+			{
+				UWorld* World = GetWorld();
+				if (World)
+				{
+					World->GetTimerManager().ClearTimer(CheckTimerHandle);
+				}
+			}
+			UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, Context);
+		}
+
+	}
+}
+

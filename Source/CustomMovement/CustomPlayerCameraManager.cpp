@@ -18,7 +18,7 @@ void ACustomPlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float Del
 	{
 		UCustomMovementComponent* CharacterMovement = Cast<UCustomMovementComponent>(CustomCharacter->GetCharacterMovement());
 		FVector TargetCrouchOffset = FVector(0, 0, CharacterMovement->GetCrouchedHalfHeight() - CustomCharacter->GetClass()->GetDefaultObject<ACharacter>()->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()); // Default will be negative value
-		FVector Offset = Offset = FMath::Lerp(FVector::ZeroVector, TargetCrouchOffset, FMath::Clamp(CrouchBlendTime / CrouchBlendDuration, 0.f, 1.f));
+		FVector Offset = FMath::Lerp(FVector::ZeroVector, TargetCrouchOffset, FMath::Clamp(CrouchBlendTime / CrouchBlendDuration, 0.f, 1.f));
 		if (CharacterMovement->IsCrouching())
 		{
 			CrouchBlendTime = FMath::Clamp(CrouchBlendTime + DeltaTime, 0.f, CrouchBlendDuration);

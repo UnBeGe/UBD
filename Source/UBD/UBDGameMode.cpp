@@ -9,7 +9,7 @@ AUBDGameMode::AUBDGameMode()
 {
 	// use our custom PlayerController class
 	PlayerControllerClass = AUBDPlayerController::StaticClass();
-
+	/*
 	// set default pawn class to our Blueprinted character
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/BP_TopDownCharacter"));
 	if (PlayerPawnBPClass.Class != nullptr)
@@ -23,4 +23,5 @@ AUBDGameMode::AUBDGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+	*/
 }

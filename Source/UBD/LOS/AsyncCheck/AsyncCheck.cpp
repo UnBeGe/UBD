@@ -83,32 +83,7 @@ uint32 FLOSCheckRunnable::Run()
 				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
 					if (Loop && this && LOS && IsValid(LOS) )
 					{
-						UWorld* BWorld = LOS->GetWorld();
-						if (!BWorld)
-						{
-							Loop = false;
-						}
-						else
-						{
-							UKismetRenderingLibrary::ClearRenderTarget2D(BWorld, LOS->RenderTarget);
-							UCanvas* Canvas;
-							FVector2D Size;
-							FDrawToRenderTargetContext Context;
-							UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(LOS, LOS->RenderTarget, Canvas, Size, Context);
-							if (Canvas && this)
-							{
-								Canvas->K2_DrawTriangle(nullptr, Triangles);
-							}
-							else
-							{
-								UWorld* World = LOS->GetWorld();
-								if (World)
-								{
-									World->GetTimerManager().ClearTimer(LOS->CheckTimerHandle);
-								}
-							}
-							UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(LOS, Context);
-						}
+						LOS->UpdateRenderTarget(Triangles);
 						
 					}
 					
