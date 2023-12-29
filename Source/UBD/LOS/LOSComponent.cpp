@@ -92,7 +92,7 @@ void ULOSComponent::CheckLOS()
 		
 		if (this)
 		{
-			/*
+			
 			AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
 
 				UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
