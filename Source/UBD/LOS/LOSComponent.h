@@ -73,6 +73,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UTextureRenderTarget2D* RenderTarget;
 
-	void UpdateRenderTarget(TArray<FCanvasUVTri> Triangles);
+	void UpdateRenderTarget();
+
+	
 };
 

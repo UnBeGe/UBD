@@ -78,10 +78,13 @@ uint32 FLOSCheckRunnable::Run()
 				Tri.V2_Pos = LOS->OffsetVector + FVector2D(TraceResults[i + 1] - OwnerLocation);
 				Triangles.Add(Tri);
 			}
-			if (LOS && Loop)
+			if (Loop)
 			{
+				FScopeLock Lock(&DataGuard);
+				SafeTraceResults = Triangles;
+				/* not thread safe
 				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
-					if (Loop && this && LOS && IsValid(LOS) )
+					if (Loop && this && LOS)
 					{
 						LOS->UpdateRenderTarget(Triangles);
 						
@@ -90,6 +93,7 @@ uint32 FLOSCheckRunnable::Run()
 
 
 					});
+					*/
 			}
 			FPlatformProcess::Sleep(LOS->CheckRate);
 		}

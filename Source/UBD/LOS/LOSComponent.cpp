@@ -29,11 +29,12 @@ void ULOSComponent::BeginPlay()
 	{
 		UWorld* World = GetWorld();
 		//Debug line traces
-		//World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+		
 		
 		if (FPlatformProcess::SupportsMultithreading())
 		{
 			LOSViewChackRun = MakeShared<FLOSCheckRunnable>(this);
+			World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 		}
 		Pawn = Cast<APawn>(GetOwner());
 
@@ -66,6 +67,8 @@ void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void ULOSComponent::CheckLOS()
 {
+	UpdateRenderTarget();
+	/*
 	AsyncTask(ENamedThreads::GameThread, [this]() {
 		FVector OwnerLocation = GetOwner()->GetActorLocation() - (GetOwner()->GetActorForwardVector() * 15);
 		FVector InitialRotation = FRotator(0, NumTraces * DegreesPerTrace / -2.f, 0).RotateVector(GetOwner()->GetActorForwardVector());
@@ -113,18 +116,18 @@ void ULOSComponent::CheckLOS()
 				
 				
 				});
-				*/
+				
 		}
 		
 		});
 	
-	
+		*/
 	
 }
 
-void ULOSComponent::UpdateRenderTarget(TArray<FCanvasUVTri> Triangles)
+void ULOSComponent::UpdateRenderTarget()
 {
-	if (this && !IsBeingDestroyed() && IsValid(this))
+	if (RenderTarget && LOSViewChackRun)
 	{
 		UWorld* BWorld = GetWorld();
 		if (!BWorld)
@@ -140,7 +143,7 @@ void ULOSComponent::UpdateRenderTarget(TArray<FCanvasUVTri> Triangles)
 			UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
 			if (Canvas && this)
 			{
-				Canvas->K2_DrawTriangle(nullptr, Triangles);
+				Canvas->K2_DrawTriangle(nullptr, LOSViewChackRun->SafeTraceResults);
 			}
 			else
 			{
