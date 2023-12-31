@@ -64,6 +64,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetMaxStamina() const;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DamagedBy(AActor* DamageCaller);
+
 	// Called every frame.
 	virtual void Tick(float DeltaSeconds) override;
 

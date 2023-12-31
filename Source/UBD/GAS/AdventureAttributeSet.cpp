@@ -199,9 +199,14 @@ void UAdventureAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 						//PC->ShowDamageNumber(LocalDamageDone, TargetCharacter);
 					}
 				}
-				/* Code for reward from killing
+				if (TargetCharacter)
+				{
+					TargetCharacter->DamagedBy(SourceActor);
+				}
+				//Code for reward from killing
 				if (!TargetCharacter->IsAlive())
 				{
+					/*
 					// TargetCharacter was alive before this damage and now is not alive, give XP and Gold bounties to Source.
 					// Don't give bounty to self.
 					if (SourceController != TargetController)
@@ -225,8 +230,10 @@ void UAdventureAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModC
 
 						Source->ApplyGameplayEffectToSelf(GEBounty, 1.0f, Source->MakeEffectContext());
 					}
+					*/
+					TargetCharacter->Die();
 				}
-				*/
+				
 			}
 		}
 	}// Damage
