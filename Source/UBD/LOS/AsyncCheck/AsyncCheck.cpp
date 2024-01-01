@@ -37,6 +37,7 @@ uint32 FLOSCheckRunnable::Run()
 				FHitResult Hit;
 				FCollisionQueryParams Params;
 				Params.AddIgnoredActor(LOS->GetOwner());
+				Params.bReturnPhysicalMaterial = false;
 				//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
 				if (LOS->GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + LOS->OffsetVectorStartTrace, ((RotatedVector * LOS->VisionLenght * 2) + OwnerLocation), LOS->CollisionToTrace, Params))
 				{
