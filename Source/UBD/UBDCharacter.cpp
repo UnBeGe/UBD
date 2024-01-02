@@ -327,6 +327,11 @@ void AUBDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Sprint);
+		EnhancedInputComponent->BindAction(AbilityOneAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityOne);
+		EnhancedInputComponent->BindAction(AbilityTwoAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityTwo);
+		EnhancedInputComponent->BindAction(AbilityThreeAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityThree);
+		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Confirm);
+		EnhancedInputComponent->BindAction(CancelAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Cancel);
 
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
@@ -386,6 +391,56 @@ void AUBDCharacter::Sprint(const FInputActionValue & Value)
 	}
 
 	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Sprint));
+}
+
+void AUBDCharacter::AbilityOne(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Ability1));
+}
+
+void AUBDCharacter::AbilityThree(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Ability3));
+}
+
+void AUBDCharacter::AbilityTwo(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Ability2));
+}
+
+void AUBDCharacter::Confirm(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Confirm));
+}
+
+void AUBDCharacter::Cancel(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Cancel));
 }
 
 void AUBDCharacter::SendAbilityLocalInput(const FInputActionValue& Value, int32 AbilityID)

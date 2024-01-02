@@ -120,8 +120,23 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-	/** Called for looking input */
+	/** Called for sprint input */
 	void Sprint(const FInputActionValue& Value);
+
+	/** Called for AbilityOne input */
+	void AbilityOne(const FInputActionValue& Value);
+
+	/** Called for AbilityTwo input */
+	void AbilityThree(const FInputActionValue& Value);
+
+	/** Called for AbilityThree input */
+	void AbilityTwo(const FInputActionValue& Value);
+
+	/** Called for Confirm input */
+	void Confirm(const FInputActionValue& Value);
+
+	/** Called for Cancel input */
+	void Cancel(const FInputActionValue& Value);
 
 	virtual void SendAbilityLocalInput(const FInputActionValue& Value, int32 AbilityID);
 
@@ -149,6 +164,26 @@ private:
 	/** Sprint Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SprintAction;
+
+	/** AbilityOne Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AbilityOneAction;
+
+	/** AbilityTwo Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AbilityTwoAction;
+
+	/** AbilityThree Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AbilityThreeAction;
+
+	/** Confirm Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* ConfirmAction;
+
+	/** Cancel Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* CancelAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
