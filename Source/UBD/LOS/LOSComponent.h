@@ -50,7 +50,13 @@ public:
 	float DegreesPerTrace = 5.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	FName TraceSocket = "LOSSocket";
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HitOffset = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HitRadiusOffsetPercent = 0.1f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int32 NumTraces = 32;

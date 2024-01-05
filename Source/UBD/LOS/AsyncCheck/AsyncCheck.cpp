@@ -2,6 +2,7 @@
 
 
 #include "AsyncCheck.h"
+#include "GameFramework/Character.h"
 
 
 
@@ -24,11 +25,13 @@ FLOSCheckRunnable::~FLOSCheckRunnable()
 
 uint32 FLOSCheckRunnable::Run()
 {
+	TWeakObjectPtr<ACharacter> OwnerCharacter = Cast<ACharacter>(LOS->GetOwner());
+	TWeakObjectPtr<USkeletalMeshComponent> Mesh = OwnerCharacter->GetMesh();
 	while (Loop)
 	{
-		if (LOS)
+		if (LOS && Mesh.IsValid())
 		{
-			FVector OwnerLocation = LOS->GetOwner()->GetActorLocation();
+			FVector OwnerLocation = Mesh->GetSocketLocation(LOS->TraceSocket);
 			FVector InitialRotation = FRotator(0, LOS->NumTraces * LOS->DegreesPerTrace / -2.f, 0).RotateVector(LOS->GetOwner()->GetActorForwardVector());
 			TArray<FVector> TraceResults;
 			for (int32 i = 0; i < LOS->NumTraces; i++)
@@ -41,7 +44,11 @@ uint32 FLOSCheckRunnable::Run()
 				//DrawDebugLine(GetWorld(), OwnerLocation, RotatedVector * VisionLenght + OwnerLocation, FColor::Red, false, CheckRate);
 				if (LOS->GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + LOS->OffsetVectorStartTrace, ((RotatedVector * LOS->VisionLenght * 2) + OwnerLocation), LOS->CollisionToTrace, Params))
 				{
-					TraceResults.Add(Hit.Location + -1 * Hit.Normal * LOS->HitOffset);
+					if (Hit.Component.IsValid())
+					{
+						TraceResults.Add(Hit.Location + ((-1 * Hit.Normal * LOS->HitOffset) * (Hit.Component->Bounds.SphereRadius * LOS->HitRadiusOffsetPercent)));
+					}
+					
 				}
 				else
 				{

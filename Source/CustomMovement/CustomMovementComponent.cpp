@@ -24,7 +24,7 @@ void UCustomMovementComponent::EnterSlide()
 
 void UCustomMovementComponent::ExitSlide()
 {
-	bWantsToCrouch = false;
+	//bWantsToCrouch = false;
 
 	FQuat NewRotation = FRotationMatrix::MakeFromXZ(UpdatedComponent->GetForwardVector().GetSafeNormal2D(), FVector::UpVector).ToQuat();
 	FHitResult Hit;
