@@ -11,10 +11,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEmailConfirmed);
 /**
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class  UAuthorizationComponent : public UBaseHttpRequestComponent
 {
 	GENERATED_BODY()
+
+private:
+	const FString RegisterUrl = "http://194.169.160.140/api/PlayersAuthorization/Register/";
+	const FString ConfirmUrl = "http://194.169.160.140/api/PlayersAuthorization/Confirm";
 
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;

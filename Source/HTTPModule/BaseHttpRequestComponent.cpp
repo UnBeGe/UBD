@@ -39,6 +39,7 @@ void UBaseHttpRequestComponent::SendRequest(FString Url, TSharedRef<FJsonObject>
 {
 	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
 
+
 	Request->OnProcessRequestComplete().BindUObject(this, &UBaseHttpRequestComponent::OnResponseRecived);
 
 	FString RequestBody;

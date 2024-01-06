@@ -12,46 +12,54 @@ void UAuthorizationComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 	TSharedPtr<FJsonObject> ResponseObj;
 	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
 	FJsonSerializer::Deserialize(Reader, ResponseObj);
-
-	if (ResponseObj->TryGetStringField("errors", Errors))
+	if (ResponseObj.IsValid())
 	{
-		OnResponse.Broadcast(false, Errors);
+		if (ResponseObj->TryGetStringField("errors", Errors))
+		{
+			OnResponse.Broadcast(false, Errors);
+		}
+		else if (ResponseObj->TryGetStringField("value", Errors))
+		{
+			OnResponse.Broadcast(false, Errors);
+		}
+		if (ResponseObj->TryGetStringField("ConfirmEmail", Results))
+		{
+			OnConfirmEmail.Broadcast();
+		}
+		if (ResponseObj->TryGetStringField("EmailConfirmed", Results))
+		{
+			OnEmailConfirmed.Broadcast();
+		}
 	}
-	if (ResponseObj->TryGetStringField("ConfirmEmail", Results))
-	{
-		OnConfirmEmail.Broadcast();
-	}
-	if (ResponseObj->TryGetStringField("EmailConfirmed", Results))
-	{
-		OnEmailConfirmed.Broadcast();
-	}
+	
 }
 
 void UAuthorizationComponent::RegistrationRequest(FString Password, FString Login, FString EMAIL)
 {
-	FString Url = "";
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 
 
-	RequestObj->SetStringField("password", FMD5::HashAnsiString(*Password));
+	RequestObj->SetNumberField("id", 0);
 	RequestObj->SetStringField("login", Login);
-	RequestObj->SetStringField("EMAIL", EMAIL);
+	RequestObj->SetStringField("password", FMD5::HashAnsiString(*Password));
+	RequestObj->SetStringField("email", EMAIL);
+	RequestObj->SetNumberField("code", 0);
+	RequestObj->SetBoolField("isActive", false);
 
 	LastEMAIL = EMAIL;
 
-	SendRequest(Url, RequestObj);
+	SendRequest(RegisterUrl, RequestObj);
 }
 
 void UAuthorizationComponent::EmailConfirmRequest(FString Code)
 {
-	FString Url = "";
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 	RequestObj->SetStringField("email", LastEMAIL);
 	RequestObj->SetStringField("code", Code);
 
-	SendRequest(Url, RequestObj);
+	SendRequest(ConfirmUrl, RequestObj);
 }
 
 
