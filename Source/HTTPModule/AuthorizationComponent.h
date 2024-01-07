@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConfirmEMAILRequested);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEmailConfirmed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAuth, FString, Login, FString, Id);
 /**
  * 
  */
@@ -19,6 +20,7 @@ class  UAuthorizationComponent : public UBaseHttpRequestComponent
 private:
 	const FString RegisterUrl = "http://194.169.160.140/api/PlayersAuthorization/Register/";
 	const FString ConfirmUrl = "http://194.169.160.140/api/PlayersAuthorization/Confirm";
+	const FString AuthUrl = "http://194.169.160.140/api/PlayersAuthorization/Auth";
 
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;
@@ -32,9 +34,15 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FEmailConfirmed OnEmailConfirmed;
 
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FAuth OnAuth;
+
 	UFUNCTION(BlueprintCallable)
 	void RegistrationRequest(FString Password, FString Login, FString EMAIL);
 
 	UFUNCTION(BlueprintCallable)
 	void EmailConfirmRequest(FString Code);
+
+	UFUNCTION(BlueprintCallable)
+	void AuthRequest(FString Email, FString Password);
 };

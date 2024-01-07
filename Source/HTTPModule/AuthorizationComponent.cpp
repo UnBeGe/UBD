@@ -30,6 +30,12 @@ void UAuthorizationComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 		{
 			OnEmailConfirmed.Broadcast();
 		}
+		FString Login;
+		FString Id;
+		if (ResponseObj->TryGetStringField("Login", Login) && ResponseObj->TryGetStringField("Id", Id))
+		{
+			OnAuth.Broadcast(Login, Id);
+		}
 	}
 	
 }
@@ -60,6 +66,16 @@ void UAuthorizationComponent::EmailConfirmRequest(FString Code)
 	RequestObj->SetStringField("code", Code);
 
 	SendRequest(ConfirmUrl, RequestObj);
+}
+
+void UAuthorizationComponent::AuthRequest(FString Email, FString Password)
+{
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+
+	RequestObj->SetStringField("email", Email);
+	RequestObj->SetStringField("password", FMD5::HashAnsiString(*Password));
+
+	SendRequest(AuthUrl, RequestObj);
 }
 
 
