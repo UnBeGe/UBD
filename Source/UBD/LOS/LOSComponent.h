@@ -31,7 +31,7 @@ public:
 	FTimerHandle CheckTimerHandle;
 
 
-	TSharedPtr<class FLOSCheckRunnable> LOSViewChackRun;
+	TSharedPtr<class FLOSCheckRunnable> LOSViewCheckRun;
 
 	void CheckLOS();
 

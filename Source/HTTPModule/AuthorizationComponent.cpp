@@ -22,6 +22,10 @@ void UAuthorizationComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 		{
 			OnResponse.Broadcast(false, Errors);
 		}
+		else if (ResponseObj->TryGetStringField("error", Errors))
+		{
+			OnResponse.Broadcast(false, Errors);
+		}
 		if (ResponseObj->TryGetStringField("ConfirmEmail", Results))
 		{
 			OnConfirmEmail.Broadcast();
