@@ -42,17 +42,17 @@ void UServerRequestComponent::IsPlayerAllowed(int PlayerId, int ServerId)
 	RequestObj->SetNumberField("PlayerId", PlayerId);
 	RequestObj->SetNumberField("ServerId", ServerId);
 
-	SendRequest(FindServerUrl, RequestObj);
+	SendRequest(CheckPlayerUrl, RequestObj);
 }
 
-void UServerRequestComponent::ChangePlayerStatus(EServerStatus NewStatus, int ServerId)
+void UServerRequestComponent::ChangeServerStatus(EServerStatus NewStatus, int ServerId)
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 	RequestObj->SetNumberField("ServerId", ServerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
-	SendRequest(FindServerUrl, RequestObj);
+	SendRequest(ChangeServerStatusUrl, RequestObj, "GET");
 }
 
 

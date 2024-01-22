@@ -26,7 +26,8 @@ class  UServerRequestComponent : public UBaseHttpRequestComponent
 	GENERATED_BODY()
 
 private:
-	const FString FindServerUrl = "http://194.169.160.140/api/ServerManager/CanPlayOnServer/";
+	const FString CheckPlayerUrl = "http://194.169.160.140/api/ServerManager/CanPlayOnServer/";
+	const FString ChangeServerStatusUrl = "http://194.169.160.140/api/Status/CangeServerStatus/";
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;
 
@@ -40,6 +41,6 @@ public:
 	void IsPlayerAllowed(int PlayerId, int ServerId);
 
 	UFUNCTION(BlueprintCallable)
-	void ChangePlayerStatus(EServerStatus NewStatus, int ServerId);
+	void ChangeServerStatus(EServerStatus NewStatus, int ServerId);
 
 };
