@@ -2,6 +2,7 @@
 
 
 #include "UBDFunctionLibrary.h"
+#include "SocketSubsystem.h"
 #include "GenericPlatform/GenericPlatformMisc.h"
 
 bool UUBDFunctionLibrary::IsEditor()
@@ -41,3 +42,30 @@ void UUBDFunctionLibrary::RequestExitServer(const UObject* WorldContextObject, b
 	
 }
 
+const FString UUBDFunctionLibrary::GetHost(UObject* WorldContextObject)
+{
+	if (WorldContextObject)
+	{
+		if (UWorld* World = WorldContextObject->GetWorld())
+		{
+			bool canBind = false;
+			TSharedRef<FInternetAddr> localIp = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->GetLocalHostAddr(*GLog, canBind);
+			return (localIp->IsValid() ? localIp->ToString(false) : World->URL.Host);
+			//return World->URL.Host;
+		}
+	}
+	return "WorldContextObject is FALSE";
+}
+
+
+const FString UUBDFunctionLibrary::GetPortNumber(UObject* WorldContextObject)
+{
+	if (WorldContextObject)
+	{
+		if (UWorld* World = WorldContextObject->GetWorld())
+		{
+			return FString::FromInt(World->URL.Port);
+		}
+	}
+	return "WorldContextObject is FALSE";
+}

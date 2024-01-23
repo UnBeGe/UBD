@@ -26,4 +26,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Server", meta = (WorldContext = "WorldContextObject"))
 	static void RequestExitServer(const UObject* WorldContextObject, bool Force = false);
+
+	UFUNCTION(BlueprintCallable, Category = "Server", meta = (WorldContext = "WorldContextObject"))
+	const FString GetHost(UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable, Category = "Server", meta = (WorldContext = "WorldContextObject"))
+	const FString GetPortNumber(UObject* WorldContextObject);
 };
