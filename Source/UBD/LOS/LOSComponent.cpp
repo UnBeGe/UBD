@@ -27,13 +27,13 @@ void ULOSComponent::BeginPlay()
 	Super::BeginPlay();
 	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
 	{
-		UWorld* World = GetWorld();
+		
 		//Debug line traces
+		UWorld* World = GetWorld();
 		
-		
-		if (FPlatformProcess::SupportsMultithreading())
+		if (FPlatformProcess::SupportsMultithreading() && World)
 		{
-			LOSViewChackRun = MakeShared<FLOSCheckRunnable>(this);
+			LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
 			World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 		}
 		Pawn = Cast<APawn>(GetOwner());
@@ -46,9 +46,15 @@ void ULOSComponent::BeginPlay()
 
 void ULOSComponent::BeginDestroy()
 {
-	if (LOSViewChackRun.IsValid())
+	UWorld* World = GetWorld();
+	if (World)
 	{
-		LOSViewChackRun->Stop();
+		World->GetTimerManager().ClearTimer(CheckTimerHandle);
+	}
+	
+	if (LOSViewCheckRun.IsValid())
+	{
+		LOSViewCheckRun->Stop();
 	}
 	Super::BeginDestroy();
 }
@@ -127,7 +133,7 @@ void ULOSComponent::CheckLOS()
 
 void ULOSComponent::UpdateRenderTarget()
 {
-	if (RenderTarget && LOSViewChackRun)
+	if (RenderTarget && LOSViewCheckRun)
 	{
 		UWorld* BWorld = GetWorld();
 		if (!BWorld)
@@ -143,7 +149,7 @@ void ULOSComponent::UpdateRenderTarget()
 			UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
 			if (Canvas && this)
 			{
-				Canvas->K2_DrawTriangle(nullptr, LOSViewChackRun->SafeTraceResults);
+				Canvas->K2_DrawTriangle(nullptr, LOSViewCheckRun->SafeTraceResults);
 			}
 			else
 			{
