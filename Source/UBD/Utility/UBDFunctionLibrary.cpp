@@ -69,3 +69,13 @@ const FString UUBDFunctionLibrary::GetPortNumber(UObject* WorldContextObject)
 	}
 	return "WorldContextObject is FALSE";
 }
+
+const int32 UUBDFunctionLibrary::GetServerId()
+{
+	int32 ServerId = -1;
+	if (FParse::Value(FCommandLine::Get(), TEXT("ServerId="), ServerId))
+	{
+		return ServerId;
+	}
+	return -1;
+}
