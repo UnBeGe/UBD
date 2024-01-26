@@ -6,6 +6,10 @@
 
 void UPlayerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+	if (!Response)
+	{
+		return;
+	}
 	//Super::OnResponseRecived(Request, Response, bConnectedSuccessfully);
 	FString Errors;
 	FString Results;

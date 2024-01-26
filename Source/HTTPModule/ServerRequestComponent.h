@@ -7,7 +7,7 @@
 #include "ServerRequestComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerCheckResult, bool, Allowed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FPlayerCheckResult, bool, Allowed, int, PlayerId, FString, Abiliity1, FString, Ability2, FString, Ability3);
 
 UENUM(BlueprintType)
 enum class EServerStatus : uint8 {

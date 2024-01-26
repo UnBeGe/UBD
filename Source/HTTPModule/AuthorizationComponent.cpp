@@ -7,6 +7,10 @@
 void UAuthorizationComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
 	//Super::OnResponseRecived(Request, Response, bConnectedSuccessfully);
+	if (!Response)
+	{
+		return;
+	}
 	FString Errors;
 	FString Results;
 	TSharedPtr<FJsonObject> ResponseObj;

@@ -6,6 +6,10 @@
 
 void UServerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+	if (!Response)
+	{
+		return;
+	}
 	//Super::OnResponseRecived(Request, Response, bConnectedSuccessfully);
 	FString Errors;
 	FString Results;
@@ -26,11 +30,24 @@ void UServerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 		{
 			OnResponse.Broadcast(false, Errors);
 		}
-
-		FString CheckPlayerResult;
-		if (ResponseObj->TryGetStringField("Host", CheckPlayerResult))
+		bool Allowed = false;
+		int PlayerID = -1;
+		
+		if (ResponseObj->TryGetNumberField("PlayerID", PlayerID))
 		{
-			OnCheckPlayerResult.Broadcast(true);
+			FString Ban;
+			FString Ability1;
+			FString Ability2;
+			FString Ability3;
+			Allowed = ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3);
+			if (ResponseObj->TryGetStringField("Ban", Ban))
+			{
+				OnCheckPlayerResult.Broadcast(Allowed, PlayerID, Ability1, Ability2, Ability3);
+			}
+			else if (Allowed)
+			{
+				OnCheckPlayerResult.Broadcast(Allowed, PlayerID, Ability1, Ability2, Ability3);
+			}
 		}
 	}
 }
