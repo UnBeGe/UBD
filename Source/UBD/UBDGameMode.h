@@ -13,6 +13,10 @@ class AUBDGameMode : public AGameModeBase
 
 public:
 	AUBDGameMode();
+
+	virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal) override;
+	UPROPERTY(BlueprintReadOnly)
+	TMap<APlayerController*, FString> PlayersId;
 };
 
 

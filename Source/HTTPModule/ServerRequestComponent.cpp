@@ -39,14 +39,14 @@ void UServerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 			FString Ability1;
 			FString Ability2;
 			FString Ability3;
-			Allowed = ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3);
+			bool Build = ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3);
 			if (ResponseObj->TryGetStringField("Ban", Ban))
 			{
-				OnCheckPlayerResult.Broadcast(Allowed, PlayerID, Ability1, Ability2, Ability3);
+				OnCheckPlayerResult.Broadcast(false, PlayerID, Ability1, Ability2, Ability3);
 			}
-			else if (Allowed)
+			else
 			{
-				OnCheckPlayerResult.Broadcast(Allowed, PlayerID, Ability1, Ability2, Ability3);
+				OnCheckPlayerResult.Broadcast(true, PlayerID, Ability1, Ability2, Ability3);
 			}
 		}
 	}

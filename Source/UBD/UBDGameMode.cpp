@@ -3,6 +3,7 @@
 #include "UBDGameMode.h"
 #include "UBDPlayerController.h"
 #include "UBDCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 AUBDGameMode::AUBDGameMode()
@@ -24,4 +25,10 @@ AUBDGameMode::AUBDGameMode()
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
 	*/
+}
+
+FString AUBDGameMode::InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal)
+{
+	PlayersId.Add(NewPlayerController, UGameplayStatics::ParseOption(Options, TEXT("Id")));
+	return Super::InitNewPlayer(NewPlayerController, UniqueId, Options, Portal);
 }
