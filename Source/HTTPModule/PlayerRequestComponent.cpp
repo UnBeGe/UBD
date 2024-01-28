@@ -42,7 +42,7 @@ void UPlayerRequestComponent::ChangePlayerStatus(EPlayerStatus NewStatus, int Pl
 	RequestObj->SetNumberField("PlayerId", PlayerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
-	SendRequest(ChangePlayerStatusUrl, RequestObj, "GET");
+	SendRequest(ChangePlayerStatusUrl, RequestObj);
 }
 
 

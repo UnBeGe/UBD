@@ -69,7 +69,7 @@ void UServerRequestComponent::ChangeServerStatus(EServerStatus NewStatus, int Se
 	RequestObj->SetNumberField("ServerId", ServerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
-	SendRequest(ChangeServerStatusUrl, RequestObj, "GET");
+	SendRequest(ChangeServerStatusUrl, RequestObj);
 }
 
 
