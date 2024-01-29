@@ -66,7 +66,7 @@ void UServerRequestComponent::ChangeServerStatus(EServerStatus NewStatus, int Se
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
-	RequestObj->SetNumberField("ServerId", ServerId);
+	RequestObj->SetNumberField("Id", ServerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
 	SendRequest(ChangeServerStatusUrl, RequestObj);

@@ -27,7 +27,7 @@ class  UServerRequestComponent : public UBaseHttpRequestComponent
 
 private:
 	const FString CheckPlayerUrl = "http://194.169.160.140/api/ServerManager/CanPlayOnServer/";
-	const FString ChangeServerStatusUrl = "http://194.169.160.140/api/Status/CangeServerStatus/";
+	const FString ChangeServerStatusUrl = "http://194.169.160.140/api/Status/ChangeServerStatus/";
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;
 

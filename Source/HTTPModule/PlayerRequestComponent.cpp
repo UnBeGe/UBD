@@ -39,7 +39,7 @@ void UPlayerRequestComponent::ChangePlayerStatus(EPlayerStatus NewStatus, int Pl
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
-	RequestObj->SetNumberField("PlayerId", PlayerId);
+	RequestObj->SetNumberField("Id", PlayerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
 	SendRequest(ChangePlayerStatusUrl, RequestObj);
