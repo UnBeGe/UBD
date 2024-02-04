@@ -35,11 +35,13 @@ void UMatchMakingComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpResp
 	}
 }
 
-void UMatchMakingComponent::FindServer(int Code)
+void UMatchMakingComponent::FindServer(int Code, FString SessionId)
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 	RequestObj->SetNumberField("Id", Code);
+
+	RequestObj->SetStringField("SessionId", SessionId);
 
 	SendRequest(FindServerUrl, RequestObj);
 }

@@ -35,11 +35,12 @@ void UPlayerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 }
 
 
-void UPlayerRequestComponent::ChangePlayerStatus(EPlayerStatus NewStatus, int PlayerId)
+void UPlayerRequestComponent::ChangePlayerStatus(EPlayerStatus NewStatus, int PlayerId, FString SessionId)
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 	RequestObj->SetNumberField("Id", PlayerId);
+	RequestObj->SetStringField("SessionId", SessionId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
 	SendRequest(ChangePlayerStatusUrl, RequestObj);

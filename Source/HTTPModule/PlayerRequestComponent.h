@@ -34,6 +34,6 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void ChangePlayerStatus(EPlayerStatus NewStatus, int PlayerId);
+	void ChangePlayerStatus(EPlayerStatus NewStatus, int PlayerId, FString SessionId);
 
 };

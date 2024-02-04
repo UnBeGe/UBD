@@ -40,9 +40,10 @@ void UAuthorizationComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 		}
 		FString Login;
 		FString Id;
-		if (ResponseObj->TryGetStringField("Login", Login) && ResponseObj->TryGetStringField("Id", Id))
+		FString SessionId;
+		if (ResponseObj->TryGetStringField("Login", Login) && ResponseObj->TryGetStringField("Id", Id) && ResponseObj->TryGetStringField("SessionId", SessionId))
 		{
-			OnAuth.Broadcast(Login, Id);
+			OnAuth.Broadcast(Login, Id, SessionId);
 		}
 	}
 	
