@@ -16,7 +16,8 @@ class HTTPMODULE_API UBuildRequestComponent : public UBaseHttpRequestComponent
 {
 	GENERATED_BODY()
 private:
-	const FString FindServerUrl = "http://194.169.160.140/api/ServerManager/WantsToPlay/";
+	const FString SaveBuildUrl = "http://194.169.160.140/api/Item/SaveBuild/";
+	const FString GetBuildUrl = "http://194.169.160.140/api/Item/GetBuild/";
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;
 public:
@@ -25,4 +26,10 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FBuildSaved OnBuildSaved;
+
+	UFUNCTION(BlueprintCallable)
+	void GetAbilities(int PlayerId);
+
+	UFUNCTION(BlueprintCallable)
+	void SaveAbilities(int PlayerId, FString SessionId);
 };

@@ -44,3 +44,22 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 	}
 
 }
+
+void UBuildRequestComponent::GetAbilities(int PlayerId)
+{
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+
+	RequestObj->SetNumberField("PlayerId", PlayerId);
+
+	SendRequest(GetBuildUrl, RequestObj);
+}
+
+void UBuildRequestComponent::SaveAbilities(int PlayerId, FString SessionId)
+{
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+
+	RequestObj->SetNumberField("PlayerId", PlayerId);
+	RequestObj->SetStringField("SessionId", SessionId);
+
+	SendRequest(SaveBuildUrl, RequestObj);
+}
