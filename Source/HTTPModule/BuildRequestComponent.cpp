@@ -54,11 +54,14 @@ void UBuildRequestComponent::GetAbilities(int PlayerId)
 	SendRequest(GetBuildUrl, RequestObj);
 }
 
-void UBuildRequestComponent::SaveAbilities(int PlayerId, FString SessionId)
+void UBuildRequestComponent::SaveAbilities(int PlayerId, FString Ability1, FString Ability2, FString Ability3, FString SessionId)
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
 	RequestObj->SetNumberField("PlayerId", PlayerId);
+	RequestObj->SetStringField("Ability1", Ability1);
+	RequestObj->SetStringField("Ability2", Ability2);
+	RequestObj->SetStringField("Ability3", Ability3);
 	RequestObj->SetStringField("SessionId", SessionId);
 
 	SendRequest(SaveBuildUrl, RequestObj);

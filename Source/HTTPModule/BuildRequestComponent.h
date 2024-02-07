@@ -31,5 +31,5 @@ public:
 	void GetAbilities(int PlayerId);
 
 	UFUNCTION(BlueprintCallable)
-	void SaveAbilities(int PlayerId, FString SessionId);
+	void SaveAbilities(int PlayerId, FString Ability1, FString Ability2, FString Ability3, FString SessionId);
 };
