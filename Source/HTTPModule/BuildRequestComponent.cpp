@@ -41,6 +41,17 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		{
 			OnBuildSaved.Broadcast();
 		}
+		TArray<TSharedPtr<FJsonValue> >* Items;
+		if (ResponseObj->TryGetArrayField("ItemsId", Items))
+		{
+			TArray<int> ItemsId;
+			for (TSharedPtr<FJsonValue> Value : *Items)
+			{
+				ItemsId.Add(Value->AsNumber());
+				OnOpenedItemsLoaded.Broadcast(ItemsId);
+			}
+		}
+
 	}
 
 }
@@ -52,6 +63,15 @@ void UBuildRequestComponent::GetAbilities(int PlayerId)
 	RequestObj->SetNumberField("PlayerId", PlayerId);
 
 	SendRequest(GetBuildUrl, RequestObj);
+}
+
+void UBuildRequestComponent::GetOpenedItems(int PlayerId)
+{
+	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
+
+	RequestObj->SetNumberField("PlayerId", PlayerId);
+
+	SendRequest(GetItemsUrl, RequestObj);
 }
 
 void UBuildRequestComponent::SaveAbilities(int PlayerId, FString Ability1, FString Ability2, FString Ability3, FString SessionId)
