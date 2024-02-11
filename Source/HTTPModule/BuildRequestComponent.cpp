@@ -41,15 +41,17 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		{
 			OnBuildSaved.Broadcast();
 		}
-		TArray<TSharedPtr<FJsonValue> >* Items;
+		const TArray<TSharedPtr<FJsonValue>>* Items;
 		if (ResponseObj->TryGetArrayField("ItemsId", Items))
 		{
-			TArray<int> ItemsId;
+			ItemsId;
 			for (TSharedPtr<FJsonValue> Value : *Items)
 			{
-				ItemsId.Add(Value->AsNumber());
-				OnOpenedItemsLoaded.Broadcast(ItemsId);
+				int Id = Value->AsNumber();
+				ItemsId.Add(Id);
+				OnOpenedItemsLoaded.Broadcast(Id);
 			}
+			
 		}
 
 	}
