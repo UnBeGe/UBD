@@ -32,7 +32,7 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		FString Ability1;
 		FString Ability2;
 		FString Ability3;
-		if (ResponseObj->TryGetStringField("Ability1", Ability1) || ResponseObj->TryGetStringField("Ability2", Ability2) || ResponseObj->TryGetStringField("Ability3", Ability3))
+		if (ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3))
 		{
 			OnBuildFinded.Broadcast(Ability1, Ability2, Ability3);
 		}
@@ -44,12 +44,17 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		const TArray<TSharedPtr<FJsonValue>>* Items;
 		if (ResponseObj->TryGetArrayField("ItemsId", Items))
 		{
-			ItemsId;
+			ItemsId.Empty();
 			for (TSharedPtr<FJsonValue> Value : *Items)
 			{
-				int Id = Value->AsNumber();
-				ItemsId.Add(Id);
-				OnOpenedItemsLoaded.Broadcast(Id);
+				int Id;
+				
+				if (Value->TryGetNumber(Id))
+				{
+					ItemsId.Add(Id);
+					OnOpenedItemsLoaded.Broadcast(Id);
+				}
+				
 			}
 			
 		}
