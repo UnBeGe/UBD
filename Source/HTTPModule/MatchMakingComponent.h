@@ -28,6 +28,6 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void FindServer(int Id);
+	void FindServer(int Id, FString SessionId);
 
 };

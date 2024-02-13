@@ -7,7 +7,7 @@
 #include "ServerRequestComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerCheckResult, bool, Allowed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FPlayerCheckResult, bool, Allowed, int, PlayerId, FString, Abiliity1, FString, Ability2, FString, Ability3);
 
 UENUM(BlueprintType)
 enum class EServerStatus : uint8 {
@@ -27,7 +27,7 @@ class  UServerRequestComponent : public UBaseHttpRequestComponent
 
 private:
 	const FString CheckPlayerUrl = "http://194.169.160.140/api/ServerManager/CanPlayOnServer/";
-	const FString ChangeServerStatusUrl = "http://194.169.160.140/api/Status/CangeServerStatus/";
+	const FString ChangeServerStatusUrl = "http://194.169.160.140/api/Status/ChangeServerStatus/";
 protected:
 	void OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully) override;
 

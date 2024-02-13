@@ -6,6 +6,10 @@
 
 void UServerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
+	if (!Response)
+	{
+		return;
+	}
 	//Super::OnResponseRecived(Request, Response, bConnectedSuccessfully);
 	FString Errors;
 	FString Results;
@@ -26,11 +30,24 @@ void UServerRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRe
 		{
 			OnResponse.Broadcast(false, Errors);
 		}
-
-		FString CheckPlayerResult;
-		if (ResponseObj->TryGetStringField("Host", CheckPlayerResult))
+		bool Allowed = false;
+		int PlayerID = -1;
+		
+		if (ResponseObj->TryGetNumberField("PlayerID", PlayerID))
 		{
-			OnCheckPlayerResult.Broadcast(true);
+			FString Ban;
+			FString Ability1;
+			FString Ability2;
+			FString Ability3;
+			bool Build = ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3);
+			if (ResponseObj->TryGetStringField("Ban", Ban))
+			{
+				OnCheckPlayerResult.Broadcast(false, PlayerID, Ability1, Ability2, Ability3);
+			}
+			else
+			{
+				OnCheckPlayerResult.Broadcast(true, PlayerID, Ability1, Ability2, Ability3);
+			}
 		}
 	}
 }
@@ -49,10 +66,10 @@ void UServerRequestComponent::ChangeServerStatus(EServerStatus NewStatus, int Se
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
-	RequestObj->SetNumberField("ServerId", ServerId);
+	RequestObj->SetNumberField("Id", ServerId);
 	RequestObj->SetNumberField("NewStatus", static_cast<int>(NewStatus));
 
-	SendRequest(ChangeServerStatusUrl, RequestObj, "GET");
+	SendRequest(ChangeServerStatusUrl, RequestObj);
 }
 
 

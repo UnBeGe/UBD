@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FConfirmEMAILRequested);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEmailConfirmed);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAuth, FString, Login, FString, Id);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAuth, FString, Login, FString, Id, FString, SessionId);
 /**
  * 
  */
