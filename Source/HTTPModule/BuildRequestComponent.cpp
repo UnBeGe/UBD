@@ -32,9 +32,10 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		FString Ability1;
 		FString Ability2;
 		FString Ability3;
-		if (ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3))
+		int PlayerId;
+		if (ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3) && ResponseObj->TryGetNumberField("PlayerId", PlayerId))
 		{
-			OnBuildFinded.Broadcast(Ability1, Ability2, Ability3);
+			OnBuildFinded.Broadcast(Ability1, Ability2, Ability3, PlayerId);
 		}
 		FString BuildSaveStatus;
 		if (ResponseObj->TryGetStringField("BuildSaveInfo", BuildSaveStatus))
@@ -48,11 +49,20 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 			for (TSharedPtr<FJsonValue> Value : *Items)
 			{
 				int Id;
+				const TArray<TSharedPtr<FJsonValue>>* OutArray;
 				
-				if (Value->TryGetNumber(Id))
+				if (Value->TryGetArray(OutArray))
 				{
-					ItemsId.Add(Id);
-					OnOpenedItemsLoaded.Broadcast(Id);
+					for (TSharedPtr<FJsonValue> inValue: *OutArray)
+					{
+						if (inValue->TryGetNumber(Id))
+						{
+							ItemsId.Add(Id);
+							OnOpenedItemsLoaded.Broadcast(Id);
+						}
+						
+					}
+					
 				}
 				
 			}
@@ -76,7 +86,7 @@ void UBuildRequestComponent::GetOpenedItems(int PlayerId)
 {
 	TSharedRef<FJsonObject> RequestObj = MakeShared<FJsonObject>();
 
-	RequestObj->SetNumberField("PlayerId", PlayerId);
+	RequestObj->SetNumberField("Id", PlayerId);
 
 	SendRequest(GetItemsUrl, RequestObj);
 }

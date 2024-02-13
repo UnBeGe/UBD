@@ -6,7 +6,7 @@
 #include "BaseHttpRequestComponent.h"
 #include "BuildRequestComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FBuildFinded, FString, Ability1, FString, Ability2, FString, Ability3);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FBuildFinded, FString, Ability1, FString, Ability2, FString, Ability3, int, PlayerId);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOpenedItemsLoaded, int, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBuildSaved);
 /**
