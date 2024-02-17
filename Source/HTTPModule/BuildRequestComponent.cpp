@@ -29,11 +29,11 @@ void UBuildRequestComponent::OnResponseRecived(FHttpRequestPtr Request, FHttpRes
 		{
 			OnResponse.Broadcast(false, Errors);
 		}
-		FString Ability1;
-		FString Ability2;
-		FString Ability3;
+		FString Ability1 = ResponseObj->GetStringField("Ability1");
+		FString Ability2 = ResponseObj->GetStringField("Ability2");
+		FString Ability3 = ResponseObj->GetStringField("Ability3");
 		int PlayerId;
-		if (ResponseObj->TryGetStringField("Ability1", Ability1) && ResponseObj->TryGetStringField("Ability2", Ability2) && ResponseObj->TryGetStringField("Ability3", Ability3) && ResponseObj->TryGetNumberField("PlayerId", PlayerId))
+		if (ResponseObj->TryGetNumberField("PlayerId", PlayerId))
 		{
 			OnBuildFinded.Broadcast(Ability1, Ability2, Ability3, PlayerId);
 		}

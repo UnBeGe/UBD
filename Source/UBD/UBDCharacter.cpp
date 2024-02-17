@@ -460,7 +460,7 @@ void AUBDCharacter::SendAbilityLocalInput(const FInputActionValue& Value, int32 
 	}
 }
 
-	void AUBDCharacter::SetHealth(float Health)
+void AUBDCharacter::SetHealth(float Health)
 {
 	if (AttributeSet.IsValid())
 	{
@@ -468,7 +468,7 @@ void AUBDCharacter::SendAbilityLocalInput(const FInputActionValue& Value, int32 
 	}
 }
 
-	void AUBDCharacter::SetStamina(float Stamina)
+void AUBDCharacter::SetStamina(float Stamina)
 	{
 		if (AttributeSet.IsValid())
 		{
