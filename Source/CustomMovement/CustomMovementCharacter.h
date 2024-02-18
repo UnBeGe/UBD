@@ -11,43 +11,19 @@
 
 
 UCLASS(config=Game)
-class ACustomMovementCharacter : public ACharacter
+class CUSTOMMOVEMENT_API ACustomMovementCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement) 
-		UCustomMovementComponent* CustomMovementComponent;
 
-private:
 
-	/** Camera boom positioning the camera behind the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
-	/** Follow camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
-	
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* DefaultMappingContext;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* JumpAction;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
-
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
 
 public:
 	ACustomMovementCharacter(const FObjectInitializer& ObjectInitializer);
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement)
+	UCustomMovementComponent* CustomMovementComponent;
 
 protected:
 
@@ -58,18 +34,19 @@ protected:
 	void Look(const FInputActionValue& Value);
 			
 
-protected:
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+public:
+
 	// To add mapping context
 	virtual void BeginPlay();
 
-public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/** MappingContext */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UInputMappingContext* DefaultMappingContext;
+
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AActor*> CharacterChildren;
 	
 	FCollisionQueryParams GetIgnoredCharacterParams() const;
 };

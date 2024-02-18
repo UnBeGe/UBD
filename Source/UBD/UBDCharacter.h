@@ -11,6 +11,7 @@
 #include "GameplayTagContainer.h"
 #include "GAS/Character/UCharacterGameplayAbility.h"
 #include "CustomMovement/CustomMovementComponent.h"
+#include "CustomMovement/CustomMovementCharacter.h"
 #include "Inventory/InventoryComponent.h"
 #include "Interface/Interact_I.h"
 #include "UBDPlayerController.h"
@@ -19,7 +20,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AUBDCharacter*, Character);
 
 UCLASS(Blueprintable)
-class AUBDCharacter : public ACharacter, public IAbilitySystemInterface, public IInteract_I
+class AUBDCharacter : public ACustomMovementCharacter, public IAbilitySystemInterface, public IInteract_I
 {
 	GENERATED_BODY()
 
@@ -77,8 +78,6 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Movement)
-	UCustomMovementComponent* CustomMovementComponent;
 
 	bool ASCInputBound = false;
 

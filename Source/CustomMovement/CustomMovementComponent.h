@@ -71,7 +71,7 @@ protected:
 
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity) override;
 
-
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
 	virtual void UpdateCharacterStateBeforeMovement(float DeltaSeconds) override;
 	virtual void UpdateCharacterStateAfterMovement(float DeltaSeconds) override;
@@ -138,9 +138,10 @@ private:
 
 
 //slide
-	void EnterSlide();
+	void EnterSlide(EMovementMode PrevMode, ECustomMovementMode PrevCustomMode);
 	void ExitSlide();
 	void PhysSlide(float deltaTime, int32 Iterations);
+	bool CanSlide() const;
 	bool GetSlideSurface(FHitResult& Hit) const;
 
 //dash

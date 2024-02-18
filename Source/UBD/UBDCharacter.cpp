@@ -8,6 +8,7 @@
 #include "GAS/UBDAbilitySystemComponent.h"
 #include "GAS/AdventureAttributeSet.h"
 #include "CustomMovement/CustomMovementComponent.h"
+
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/UBDPlayerState.h"
@@ -22,8 +23,6 @@
 
 AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
 {
-	CustomMovementComponent = Cast<UCustomMovementComponent>(GetCharacterMovement());
-	CustomMovementComponent->SetIsReplicated(true);
 
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
