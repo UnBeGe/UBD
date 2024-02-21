@@ -7,6 +7,7 @@
 #include "CustomMovementComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDashStartDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMovementModeChanged, EMovementMode, PreviousMovementMode);
 
 UENUM(BlueprintType)
 enum ECustomMovementMode
@@ -63,6 +64,9 @@ class CUSTOMMOVEMENT_API UCustomMovementComponent : public UCharacterMovementCom
 public:
 	UPROPERTY(BlueprintAssignable)
 	FDashStartDelegate DashStartDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FMovementModeChanged MovementModeChanged;
 
 protected:
 	virtual void InitializeComponent() override;

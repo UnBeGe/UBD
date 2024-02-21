@@ -396,6 +396,8 @@ void UCustomMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	{
 		bOrientRotationToMovement = true;
 	}
+
+	MovementModeChanged.Broadcast(PreviousMovementMode);
 }
 
 void UCustomMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
