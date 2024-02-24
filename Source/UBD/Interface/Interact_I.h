@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact|ToInteract")
 	void InteractRequest(AActor* InteractableActor);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Interact|ToInteract")
+	void StopInteractRequest(AActor* InteractableActor);
 };
