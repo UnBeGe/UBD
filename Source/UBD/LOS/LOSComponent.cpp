@@ -25,7 +25,8 @@ ULOSComponent::ULOSComponent()
 void ULOSComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+
+	if (Cast<APawn>(GetOwner())->IsLocallyControlled() && bLOSCheck)
 	{
 		
 		//Debug line traces
