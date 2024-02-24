@@ -37,11 +37,11 @@ void ULOSComponent::BeginPlay()
 			LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
 			World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 		}
-		Pawn = Cast<APawn>(GetOwner());
+		
 
 		
 	}
-	
+	Pawn = Cast<APawn>(GetOwner());
 	// ...
 }
 
