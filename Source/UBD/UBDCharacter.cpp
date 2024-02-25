@@ -8,7 +8,7 @@
 #include "GAS/UBDAbilitySystemComponent.h"
 #include "GAS/AdventureAttributeSet.h"
 #include "CustomMovement/CustomMovementComponent.h"
-
+#include "SkeletalMeshComponentBudgeted.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/UBDPlayerState.h"
@@ -21,15 +21,17 @@
 #include "Engine/World.h"
 
 
-AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
+AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
 {
-
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 
 	bAlwaysRelevant = true;
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 	EffectsRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));

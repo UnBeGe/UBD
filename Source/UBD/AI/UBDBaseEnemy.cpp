@@ -2,12 +2,15 @@
 
 
 #include "UBDBaseEnemy.h"
+#include "SkeletalMeshComponentBudgeted.h"
 #include "UBD/GAS/UBDAbilitySystemComponent.h"
 
-AUBDBaseEnemy::AUBDBaseEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+AUBDBaseEnemy::AUBDBaseEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UUBDAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	AIAttribSet = CreateDefaultSubobject<UAdventureAttributeSet>(TEXT("AttributeSet"));
 }
