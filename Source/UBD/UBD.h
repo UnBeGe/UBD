@@ -16,4 +16,5 @@ enum class UBDAbilityID : uint8
 	Ability1	UMETA(DisplayName = "Ability1"),
 	Ability2	UMETA(DisplayName = "Ability2"),
 	Ability3	UMETA(DisplayName = "Ability3"),
+	Attack		UMETA(DisplayName = "Attack"),
 };

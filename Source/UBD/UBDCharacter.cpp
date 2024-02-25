@@ -147,6 +147,7 @@ float AUBDCharacter::GetHealth() const
 	return 0.0f;
 }
 
+
 float AUBDCharacter::GetCharacterLevel() const
 {
 	if (AttributeSet.IsValid())
@@ -329,6 +330,7 @@ void AUBDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Sprint);
 		EnhancedInputComponent->BindAction(AbilityOneAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityOne);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Attack);
 		EnhancedInputComponent->BindAction(AbilityTwoAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityTwo);
 		EnhancedInputComponent->BindAction(AbilityThreeAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityThree);
 		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Confirm);
@@ -402,6 +404,16 @@ void AUBDCharacter::AbilityOne(const FInputActionValue& Value)
 	}
 
 	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Ability1));
+}
+
+void AUBDCharacter::Attack(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+	GetAttackInfo();
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Attack));
 }
 
 void AUBDCharacter::AbilityThree(const FInputActionValue& Value)

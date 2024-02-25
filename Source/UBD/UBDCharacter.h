@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void GetAttackInfo();
+
 	UFUNCTION(BlueprintCallable)
 	float GetCharacterLevel() const;
 
@@ -125,6 +128,9 @@ protected:
 	/** Called for AbilityOne input */
 	void AbilityOne(const FInputActionValue& Value);
 
+	/** Called for AbilityOne input */
+	void Attack(const FInputActionValue& Value);
+
 	/** Called for AbilityTwo input */
 	void AbilityThree(const FInputActionValue& Value);
 
@@ -183,6 +189,10 @@ private:
 	/** Cancel Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* CancelAction;
+
+	/** Cancel Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* AttackAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
