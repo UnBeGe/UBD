@@ -25,7 +25,8 @@ ULOSComponent::ULOSComponent()
 void ULOSComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Cast<APawn>(GetOwner())->IsLocallyControlled())
+
+	if (Cast<APawn>(GetOwner())->IsLocallyControlled() && bLOSCheck)
 	{
 		
 		//Debug line traces
@@ -36,11 +37,11 @@ void ULOSComponent::BeginPlay()
 			LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
 			World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 		}
-		Pawn = Cast<APawn>(GetOwner());
+		
 
 		
 	}
-	
+	Pawn = Cast<APawn>(GetOwner());
 	// ...
 }
 

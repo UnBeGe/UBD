@@ -47,6 +47,9 @@ public:
 	float CheckRate = 0.1f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bLOSCheck = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DegreesPerTrace = 5.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
