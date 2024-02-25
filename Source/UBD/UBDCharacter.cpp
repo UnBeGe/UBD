@@ -8,7 +8,7 @@
 #include "GAS/UBDAbilitySystemComponent.h"
 #include "GAS/AdventureAttributeSet.h"
 #include "CustomMovement/CustomMovementComponent.h"
-
+#include "SkeletalMeshComponentBudgeted.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Public/UBDPlayerState.h"
@@ -21,15 +21,17 @@
 #include "Engine/World.h"
 
 
-AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCustomMovementComponent>(CharacterMovementComponentName))
+AUBDCharacter::AUBDCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
 {
-
+	
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
 
 	bAlwaysRelevant = true;
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 	EffectsRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("State.RemoveOnDeath"));
@@ -144,6 +146,7 @@ float AUBDCharacter::GetHealth() const
 	}
 	return 0.0f;
 }
+
 
 float AUBDCharacter::GetCharacterLevel() const
 {
@@ -327,6 +330,7 @@ void AUBDCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Sprint);
 		EnhancedInputComponent->BindAction(AbilityOneAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityOne);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Attack);
 		EnhancedInputComponent->BindAction(AbilityTwoAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityTwo);
 		EnhancedInputComponent->BindAction(AbilityThreeAction, ETriggerEvent::Triggered, this, &AUBDCharacter::AbilityThree);
 		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &AUBDCharacter::Confirm);
@@ -400,6 +404,16 @@ void AUBDCharacter::AbilityOne(const FInputActionValue& Value)
 	}
 
 	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Ability1));
+}
+
+void AUBDCharacter::Attack(const FInputActionValue& Value)
+{
+	if (!IsAlive())
+	{
+		return;
+	}
+	GetAttackInfo();
+	SendAbilityLocalInput(Value, static_cast<int32>(UBDAbilityID::Attack));
 }
 
 void AUBDCharacter::AbilityThree(const FInputActionValue& Value)

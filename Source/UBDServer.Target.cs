@@ -10,6 +10,6 @@ public class UBDServerTarget : TargetRules
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.V4;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
-		ExtraModuleNames.AddRange(new string[] { "UBD", "CustomMovement" , "HTTPModule" });
+		ExtraModuleNames.AddRange(new string[] { "UBD", "CustomMovement" , "HTTPModule", "AnimationBudgetAllocator" });
 	}
 }
