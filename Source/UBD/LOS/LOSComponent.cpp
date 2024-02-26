@@ -26,22 +26,21 @@ void ULOSComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Cast<APawn>(GetOwner())->IsLocallyControlled() && bLOSCheck)
+	if (Cast<APawn>(GetOwner())->IsLocallyControlled() )
 	{
-		
-		//Debug line traces
-		UWorld* World = GetWorld();
-		
-		if (FPlatformProcess::SupportsMultithreading() && World)
+		if (bLOSCheck)
 		{
-			LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
-			World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
-		}
-		
+			//Debug line traces
+			UWorld* World = GetWorld();
 
-		
+			if (FPlatformProcess::SupportsMultithreading() && World)
+			{
+				LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
+				World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
+			}
+		}
+		Pawn = Cast<APawn>(GetOwner());
 	}
-	Pawn = Cast<APawn>(GetOwner());
 	// ...
 }
 
