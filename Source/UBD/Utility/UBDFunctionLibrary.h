@@ -35,4 +35,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Server", meta = (WorldContext = "WorldContextObject"))
 	static const int32 GetServerId();
+
+	UFUNCTION(BlueprintCallable, Category = "Server", meta = (WorldContext = "WorldContextObject"))
+	static FRotator RInterpToConstant(FRotator Current, FRotator Target, float DeltaTime, float InterpSpeed, bool bShortestPath);
 };

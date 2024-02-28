@@ -79,3 +79,18 @@ const int32 UUBDFunctionLibrary::GetServerId()
 	}
 	return -1;
 }
+
+FRotator UUBDFunctionLibrary::RInterpToConstant(FRotator Current, FRotator Target, float DeltaTime, float InterpSpeed, bool bShortestPath)
+{
+	if (bShortestPath)
+	{
+		FQuat AQuat(Current);
+		FQuat BQuat(Target);
+
+		FQuat Result = FMath::QInterpConstantTo(AQuat, BQuat, DeltaTime, InterpSpeed);
+
+		return Result.Rotator();
+	}
+
+	return FMath::RInterpConstantTo(Current, Target, DeltaTime, InterpSpeed);
+}
