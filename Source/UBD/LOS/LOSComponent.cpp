@@ -35,7 +35,7 @@ void ULOSComponent::BeginPlay()
 
 			if (FPlatformProcess::SupportsMultithreading() && World)
 			{
-				LOSViewCheckRun = MakeShared<FLOSCheckRunnable>(this);
+				LOSViewCheckRun = MakeUnique<FLOSCheckRunnable>(this);
 				World->GetTimerManager().SetTimer(CheckTimerHandle, this, &ULOSComponent::CheckLOS, CheckRate, true);
 			}
 		}
@@ -54,7 +54,7 @@ void ULOSComponent::BeginDestroy()
 	
 	if (LOSViewCheckRun.IsValid())
 	{
-		LOSViewCheckRun->Stop();
+		LOSViewCheckRun.Reset();
 	}
 	Super::BeginDestroy();
 }
@@ -74,66 +74,12 @@ void ULOSComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 void ULOSComponent::CheckLOS()
 {
 	UpdateRenderTarget();
-	/*
-	AsyncTask(ENamedThreads::GameThread, [this]() {
-		FVector OwnerLocation = GetOwner()->GetActorLocation() - (GetOwner()->GetActorForwardVector() * 15);
-		FVector InitialRotation = FRotator(0, NumTraces * DegreesPerTrace / -2.f, 0).RotateVector(GetOwner()->GetActorForwardVector());
-		TArray<FVector> TraceResults;
-		for (int32 i = 0; i < NumTraces; i++)
-		{
-			FVector RotatedVector = FRotator(0, i * DegreesPerTrace, 0).RotateVector(InitialRotation);
-			FHitResult Hit;
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(GetOwner());
-			
-			if (GetWorld()->LineTraceSingleByChannel(Hit, OwnerLocation + OffsetVectorStartTrace, ((RotatedVector * VisionLenght * 2) + OwnerLocation) , CollisionToTrace, Params))
-			{
-				DrawDebugLine(GetWorld(), OwnerLocation + OffsetVectorStartTrace, Hit.Location, FColor::Red, false, CheckRate);
-			}
-			else
-			{
-				DrawDebugLine(GetWorld(), OwnerLocation + OffsetVectorStartTrace, ((RotatedVector * VisionLenght * 2) + OwnerLocation) - OffsetVectorStartTrace, FColor::Red, false, CheckRate);
-			}
-		}
-		
-		if (this)
-		{
-			
-			AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
-
-				UKismetRenderingLibrary::ClearRenderTarget2D(this, RenderTarget);
-				UCanvas* Canvas;
-				FVector2D Size;
-				FDrawToRenderTargetContext Context;
-				UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, RenderTarget, Canvas, Size, Context);
-				if (Canvas && this)
-				{
-					Canvas->K2_DrawTriangle(nullptr, Triangles);
-				}
-				else
-				{
-					UWorld* World = GetWorld();
-					if (World)
-					{
-						World->GetTimerManager().ClearTimer(this->CheckTimerHandle);
-					}
-				}
-				UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, Context);
-				
-				
-				});
-				
-		}
-		
-		});
-	
-		*/
 	
 }
 
 void ULOSComponent::UpdateRenderTarget()
 {
-	if (RenderTarget && LOSViewCheckRun)
+	if (RenderTarget && LOSViewCheckRun.IsValid())
 	{
 		UWorld* BWorld = GetWorld();
 		if (!BWorld)

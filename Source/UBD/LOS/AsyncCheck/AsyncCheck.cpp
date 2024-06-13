@@ -25,11 +25,15 @@ FLOSCheckRunnable::~FLOSCheckRunnable()
 
 uint32 FLOSCheckRunnable::Run()
 {
+	TWeakObjectPtr<USkeletalMeshComponent> Mesh;
 	TWeakObjectPtr<ACharacter> OwnerCharacter = Cast<ACharacter>(LOS->GetOwner());
-	TWeakObjectPtr<USkeletalMeshComponent> Mesh = OwnerCharacter->GetMesh();
+	if (OwnerCharacter.IsValid())
+	{
+		 Mesh = OwnerCharacter->GetMesh();
+	}
 	while (Loop)
 	{
-		if (LOS && Mesh.IsValid())
+		if (LOS.IsValid() && Mesh.IsValid())
 		{
 			FVector OwnerLocation = Mesh->GetSocketLocation(LOS->TraceSocket);
 			FVector InitialRotation = FRotator(0, LOS->NumTraces * LOS->DegreesPerTrace / -2.f, 0).RotateVector(LOS->GetOwner()->GetActorForwardVector());
@@ -90,18 +94,7 @@ uint32 FLOSCheckRunnable::Run()
 			{
 				FScopeLock Lock(&DataGuard);
 				SafeTraceResults = Triangles;
-				/* not thread safe
-				AsyncTask(ENamedThreads::GameThread, [this, Triangles]() {
-					if (Loop && this && LOS)
-					{
-						LOS->UpdateRenderTarget(Triangles);
-						
-					}
-					
-
-
-					});
-					*/
+				
 			}
 			FPlatformProcess::Sleep(LOS->CheckRate);
 		}
@@ -118,7 +111,7 @@ uint32 FLOSCheckRunnable::Run()
 
 void FLOSCheckRunnable::Exit()
 {
-	LOS = nullptr;
+	LOS.Reset();
 }
 
 void FLOSCheckRunnable::Stop()

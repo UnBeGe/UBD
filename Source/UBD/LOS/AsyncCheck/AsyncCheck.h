@@ -34,7 +34,7 @@ public:
 
 protected:
 	FRunnableThread* Thread = nullptr;
-	ULOSComponent* LOS;
+	TWeakObjectPtr<ULOSComponent> LOS;
 
 	bool Loop = true;
 };
