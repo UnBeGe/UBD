@@ -5,9 +5,9 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Engine/Canvas.h"
 #include "Async/Async.h"
-#include "AsyncCheck/AsyncCheck.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/KismetMaterialLibrary.h"
+#include "AsyncCheck/AsyncCheck.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
 // Sets default values for this component's properties
